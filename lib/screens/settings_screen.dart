@@ -171,22 +171,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _editName(BuildContext context) async {
-    final c = TextEditingController(text: AppState.I.name);
-    final v = await showDialog<String>(
-      context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Your name'),
-        content: TextField(controller: c, autofocus: true, maxLength: 24),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(d, c.text), child: const Text('Save')),
-        ],
-      ),
-    );
-    if (v != null) await AppState.I.setName(v);
-  }
-
   Future<void> _editPlace(BuildContext context, Place p) async {
     final name = TextEditingController(text: p.name);
     final aliases = TextEditingController(text: p.aliases.join(', '));
