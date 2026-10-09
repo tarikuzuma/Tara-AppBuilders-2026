@@ -126,8 +126,13 @@ class TopBar extends StatelessWidget {
   const TopBar({super.key, this.label});
   final String? label;
 
+  // Listens to AppState itself: it is often built as a const child, so a
+  // parent rebuild alone would not refresh the name/avatar.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: AppState.I, builder: (context, _) => _build(context));
+
+  Widget _build(BuildContext context) {
     final s = AppState.I;
     final h = s.now.hour;
     final greet = h < 12 ? 'Magandang umaga' : (h < 18 ? 'Magandang hapon' : 'Magandang gabi');

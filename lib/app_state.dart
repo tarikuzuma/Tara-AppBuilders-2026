@@ -14,7 +14,6 @@ import 'ai/brain.dart';
 import 'ai/local_ai.dart';
 import 'ai/prompts.dart';
 import 'ai/receipt.dart';
-import 'ai/receipt.dart';
 import 'config/ai_config.dart';
 import 'data/db.dart';
 import 'data/models.dart';

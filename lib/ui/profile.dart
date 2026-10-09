@@ -32,8 +32,13 @@ class ProfileButton extends StatelessWidget {
   const ProfileButton({super.key, this.size = 44});
   final double size;
 
+  // Listens to AppState itself: it is often built as a const child, so a
+  // parent rebuild alone would not refresh the name/avatar.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ListenableBuilder(listenable: AppState.I, builder: (context, _) => _build(context));
+
+  Widget _build(BuildContext context) {
     final s = AppState.I;
     return Semantics(
       button: true,
