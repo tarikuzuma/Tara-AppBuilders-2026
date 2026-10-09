@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                   child: _QuickAction(
                     icon: Icons.mic,
                     title: 'Hey Tara',
-                    sub: 'Track my trip…',
+                    sub: 'Magsalita ka lang',
                     dark: true,
                     onTap: () => showVoiceSheet(context),
                   ),
@@ -218,7 +218,7 @@ class _Hero extends StatelessWidget {
     final mode = modeLabel(plan.mode);
     final (String head, String accent, String sub, Color tone) = switch (v.kind) {
       VerdictKind.onTime => ('May oras ka pa — alis by ', hhmm(v.leaveBy!), 'Para umabot sa ${hhmm(plan.arrive)} mo. ${v.slackMin} mins pa.', T.olive),
-      VerdictKind.tight => ('Alis ka na! Dapat by ', hhmm(v.leaveBy!), 'Sakto lang sa ${hhmm(plan.arrive)} kung aalis ka ngayon.', T.amber),
+      VerdictKind.tight => ('Alis ka na ngayon! ', 'Sakto lang', 'Darating ka mga ${hhmm(v.etaMedian!)} — wala nang buffer.', T.amber),
       VerdictKind.late => ('Late ka na ng ', '${v.lateByMin} min', 'Kung $mode. Tanong mo kay Tara kung ano mas mabilis.', T.red),
       VerdictKind.unknown => ('Kulang pa ', 'data', 'I-log mo ang ilang trips para ma-compute ni Tara.', T.muted),
     };
@@ -264,7 +264,7 @@ class _Hero extends StatelessWidget {
           const SizedBox(height: 18),
           Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
             _chip(modeIcon(plan.mode), mode),
-            _chip(Icons.schedule, st.p80Min == null ? '—' : '${st.p80Min} min p80'),
+            _chip(Icons.schedule, st.p80Min == null ? '—' : '~${st.p80Min} min'),
             _chip(Icons.history, '${st.count} trips'),
           ]),
           const SizedBox(height: 10),

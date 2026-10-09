@@ -78,7 +78,7 @@ const kPersonaStyle = <String, String>{
 
 /// Short tag-on used by template answers when the AI is unavailable.
 const kPersonaSignoff = <String, String>{
-  'tito': 'Ingat, iho!',
+  'tito': 'Ingat, anak!',
   'conyo': 'Ingat, bestie!',
   'coach': 'Kaya mo ’yan!',
   'lola': 'Ingat ka, anak.',
