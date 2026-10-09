@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../ai/brain.dart';
 import '../app_state.dart';
+import '../config/ai_config.dart';
 import '../screens/log_trip_screen.dart';
 import 'components.dart';
 import 'theme.dart';
@@ -47,7 +48,7 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
   }
 
   Future<void> _start() async {
-    if (!s.ai.ready) {
+    if (!s.ai.ready && AiConfig.voiceEngine != 'android') {
       setState(() {
         phase = _Phase.typing;
         error = 'Basic mode: walang voice model pa. I-type mo na lang.';
@@ -70,7 +71,9 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
     if (text.trim().isEmpty) {
       setState(() {
         phase = _Phase.typing;
-        error = 'Di kita narinig nang maayos — ulitin o i-type?';
+        error = s.voiceError == null
+            ? 'Di kita narinig nang maayos — ulitin o i-type?'
+            : 'Di kita narinig (${s.voiceError}) — ulitin o i-type?';
       });
       return;
     }
@@ -146,7 +149,12 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
           const SizedBox(height: 6),
           Text('“Track my location, papunta akong LB” · “Aabot ba ako by 8?” · “Nandito na ako”',
               style: T.b(15, color: T.muted)),
-          const SizedBox(height: 26),
+          const SizedBox(height: 16),
+          ValueListenableBuilder<String>(
+            valueListenable: s.liveTranscript,
+            builder: (_, t, __) => Text(t.isEmpty ? ' ' : '“$t”', style: T.b(19, w: FontWeight.w500, height: 1.4)),
+          ),
+          const SizedBox(height: 16),
           Center(
             child: AnimatedBuilder(
               animation: wave,
@@ -184,7 +192,7 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
           Row(children: [
             const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.4, color: T.olive)),
             const SizedBox(width: 12),
-            Text(phase == _Phase.transcribing ? 'Pinapakinggan ulit (Whisper on-device)…' : 'Nag-iisip si Tara…',
+            Text(phase == _Phase.transcribing ? 'Pinapakinggan (on-device)…' : 'Nag-iisip si Tara…',
                 style: T.b(15, color: T.muted)),
           ]),
           const SizedBox(height: 30),

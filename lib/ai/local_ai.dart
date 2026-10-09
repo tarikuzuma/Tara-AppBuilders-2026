@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:cactus/cactus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../config/ai_config.dart';
 
@@ -82,6 +86,9 @@ class CactusAI implements LocalAI {
 
   @override
   Future<String> readImage(String imagePath, String prompt) async {
+    // Full-resolution screenshots blew past 7 GB RAM on the demo phone and got
+    // Tara killed; the vision model only needs a small image.
+    imagePath = await _downscale(imagePath, AiConfig.visionMaxSide);
     await _useLm(AiConfig.visionModel);
     _lm.reset();
     final res = await _lm.generateCompletion(
@@ -104,7 +111,10 @@ class CactusAI implements LocalAI {
       await _stt.initializeModel(params: CactusInitParams(model: AiConfig.sttModel));
       _loaded = AiConfig.sttModel;
     }
-    final res = await _stt.transcribe(audioFilePath: wavPath, prompt: AiConfig.whisperPrompt);
+    // Feed raw PCM (parsed from the WAV's data chunk) instead of the file path:
+    // the file path decoded only a single word on the demo phone.
+    final pcm = _wavPcm(await File(wavPath).readAsBytes());
+    final res = await _stt.transcribe(audioStream: Stream.value(pcm), prompt: AiConfig.whisperPrompt);
     debugPrint('[tara-ai] stt ${res.totalTimeMs.round()}ms: ${res.text}');
     return res.text.replaceAll(RegExp(r'<\|[^|]*\|>'), '').trim();
   }
@@ -114,6 +124,38 @@ class CactusAI implements LocalAI {
     _lm.unload();
     _stt.unload();
     _loaded = null;
+  }
+
+  /// Returns the PCM samples of a 16 kHz mono 16-bit WAV (any header layout).
+  static Uint8List _wavPcm(Uint8List b) {
+    final d = ByteData.sublistView(b);
+    var i = 12;
+    while (i + 8 <= b.length) {
+      final id = String.fromCharCodes(b.sublist(i, i + 4));
+      final size = d.getUint32(i + 4, Endian.little);
+      if (id == 'data') return Uint8List.sublistView(b, i + 8, (i + 8 + size).clamp(0, b.length));
+      i += 8 + size + (size & 1);
+    }
+    return Uint8List.sublistView(b, 44);
+  }
+
+  static Future<String> _downscale(String path, int maxSide) async {
+    final bytes = await File(path).readAsBytes();
+    final probe = await ui.instantiateImageCodec(bytes);
+    final frame = await probe.getNextFrame();
+    final w = frame.image.width, h = frame.image.height;
+    frame.image.dispose();
+    if (w <= maxSide && h <= maxSide) return path;
+    final scale = maxSide / (w > h ? w : h);
+    final codec = await ui.instantiateImageCodec(bytes,
+        targetWidth: (w * scale).round(), targetHeight: (h * scale).round());
+    final small = (await codec.getNextFrame()).image;
+    final png = await small.toByteData(format: ui.ImageByteFormat.png);
+    small.dispose();
+    final out = File('${(await getTemporaryDirectory()).path}/tara_vision.png');
+    await out.writeAsBytes(png!.buffer.asUint8List());
+    debugPrint('[tara-ai] downscaled ${w}x$h -> ${(w * scale).round()}x${(h * scale).round()}');
+    return out.path;
   }
 
   static String _clean(String s) =>

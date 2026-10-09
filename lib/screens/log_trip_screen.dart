@@ -96,7 +96,7 @@ class _LogTripScreenState extends State<LogTripScreen> {
   }
 
   Future<void> _importScreenshot() async {
-    final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final img = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1024, maxHeight: 1024);
     if (img == null) return;
     if (!s.ai.ready) {
       setState(() => status = 'Kailangan ng AI models para mabasa ang screenshot.');

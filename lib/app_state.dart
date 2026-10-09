@@ -8,9 +8,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ai/brain.dart';
 import 'ai/local_ai.dart';
+import 'ai/prompts.dart';
 import 'config/ai_config.dart';
 import 'data/db.dart';
 import 'data/models.dart';
@@ -61,6 +63,11 @@ class AppState extends ChangeNotifier {
 
   StreamSubscription<Position>? _gps;
   StreamSubscription<StepCount>? _steps;
+  final liveTranscript = ValueNotifier<String>('');
+  final _speech = SpeechToText();
+  bool _speechReady = false;
+  String? _speechLocale;
+  String? voiceError;
   AudioRecorder? _rec;
   AudioRecorder get _recorder => _rec ??= AudioRecorder();
   final _tts = FlutterTts();
@@ -176,6 +183,9 @@ class AppState extends ChangeNotifier {
   // ------------------------------------------------------------ voice
 
   Future<bool> startListening() async {
+    liveTranscript.value = '';
+    voiceError = null;
+    if (AiConfig.voiceEngine == 'android') return _startAndroidSpeech();
     if (!await _recorder.hasPermission()) return false;
     final dir = await getTemporaryDirectory();
     await _recorder.start(
@@ -185,8 +195,68 @@ class AppState extends ChangeNotifier {
     return true;
   }
 
+  /// Android's on-device recognizer: audio never leaves the phone.
+  Future<bool> _startAndroidSpeech() async {
+    if (!_speechReady) {
+      _speechReady = await _speech.initialize(
+        onError: (e) {
+          debugPrint('[tara-voice] error ${e.errorMsg} locale=$_speechLocale');
+          // Offline pack for this language not installed: fall through the list.
+          if (e.errorMsg == 'error_language_unavailable' && _nextLocale()) {
+            _listenNow();
+            return;
+          }
+          voiceError = e.errorMsg;
+        },
+        onStatus: (st) => debugPrint('[tara-voice] status $st'),
+      );
+      if (!_speechReady) return false;
+      _availableLocales = (await _speech.locales()).map((l) => l.localeId).toList();
+      _localeIdx = -1;
+      _nextLocale();
+    }
+    await _listenNow();
+    return true;
+  }
+
+  List<String> _availableLocales = [];
+  int _localeIdx = -1;
+
+  /// Advances to the next preferred locale this phone lists. False when exhausted.
+  bool _nextLocale() {
+    final prefs = [...AiConfig.voiceLocales, ..._availableLocales.take(1)];
+    while (++_localeIdx < prefs.length) {
+      final id = prefs[_localeIdx];
+      if (_availableLocales.isEmpty || _availableLocales.contains(id) || _localeIdx >= AiConfig.voiceLocales.length) {
+        _speechLocale = id;
+        debugPrint('[tara-voice] trying locale $id');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> _listenNow() => _speech.listen(
+        onResult: (r) => liveTranscript.value = r.recognizedWords,
+        localeId: _speechLocale,
+        listenOptions: SpeechListenOptions(
+          onDevice: true,
+          partialResults: true,
+          listenMode: ListenMode.dictation,
+          contextualPhrases: AiConfig.voicePhrases,
+          pauseFor: const Duration(seconds: 3),
+          listenFor: const Duration(seconds: 20),
+        ),
+      );
+
   /// Stops recording and returns the transcript ('' if nothing understood).
   Future<String> stopListening() async {
+    if (AiConfig.voiceEngine == 'android') {
+      await _speech.stop();
+      await Future.delayed(const Duration(milliseconds: 600)); // final result
+      debugPrint('[tara-voice] final "${liveTranscript.value}"');
+      return liveTranscript.value.trim();
+    }
     final path = await _recorder.stop();
     if (path == null || !File(path).existsSync()) return '';
     if (!ai.ready) return '';
@@ -199,7 +269,46 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> cancelListening() async {
-    if (await _recorder.isRecording()) await _recorder.stop();
+    if (_speech.isListening) await _speech.cancel();
+    if (_rec != null && await _rec!.isRecording()) await _rec!.stop();
+  }
+
+  // ------------------------------------------------------------ diagnostics
+
+  /// Runs every WAV / image in <app docs>/selftest through the real on-device
+  /// pipeline and reports transcript, intent and timings. Used to test voice
+  /// and vision without speaking into the phone.
+  Future<List<String>> selfTest() async {
+    final out = <String>[];
+    void log(String l) {
+      out.add(l);
+      debugPrint('[tara-selftest] $l');
+    }
+
+    final dir = Directory('${(await getApplicationDocumentsDirectory()).path}/selftest');
+    if (!dir.existsSync()) {
+      log('No selftest folder.');
+      return out;
+    }
+    // Voice clips first, images last (vision is the heaviest model).
+    final files = dir.listSync().whereType<File>().toList()
+      ..sort((a, b) => (a.path.endsWith('.wav') ? '0${a.path}' : '1${a.path}').compareTo(b.path.endsWith('.wav') ? '0${b.path}' : '1${b.path}'));
+    for (final f in files) {
+      final name = f.uri.pathSegments.last;
+      final sw = Stopwatch()..start();
+      if (name.endsWith('.wav')) {
+        final text = await ai.transcribe(f.path);
+        final tStt = sw.elapsedMilliseconds;
+        final a = await brain.ask(text, ctx);
+        log('$name | stt ${tStt}ms "$text" | brain ${sw.elapsedMilliseconds - tStt}ms -> ${a.intent.type} '
+            'dest=${a.intent.destination} mode=${a.intent.mode} rain=${a.intent.rain} fare=${a.intent.fare} '
+            'min=${a.intent.minutes} | ${a.headline}');
+      } else if (name.endsWith('.png') || name.endsWith('.jpg')) {
+        final raw = await ai.readImage(f.path, kTripExtractPrompt);
+        log('$name | vision ${sw.elapsedMilliseconds}ms -> ${raw.replaceAll('\n', ' ')}');
+      }
+    }
+    return out;
   }
 
   // ------------------------------------------------------------ trips + XP

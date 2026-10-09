@@ -73,6 +73,14 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
             ]),
+            _group('Diagnostics', [
+              _row(
+                leading: IconTile(Icons.science_outlined, size: 38),
+                title: 'Run AI self-test',
+                sub: 'Voice clips + images in the selftest folder, on-device',
+                onTap: () => _selfTest(context),
+              ),
+            ]),
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(color: T.ink, borderRadius: BorderRadius.circular(20)),
@@ -141,6 +149,25 @@ class SettingsScreen extends StatelessWidget {
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('Download failed: $e')));
     }
+  }
+
+  Future<void> _selfTest(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(content: Row(children: [CircularProgressIndicator(), SizedBox(width: 16), Text('Running on-device…')])),
+    );
+    final lines = await AppState.I.selfTest();
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Self-test'),
+        content: SingleChildScrollView(child: Text(lines.join('\n\n'), style: T.b(12))),
+        actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('OK'))],
+      ),
+    );
   }
 
   Future<void> _editName(BuildContext context) async {

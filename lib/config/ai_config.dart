@@ -9,12 +9,23 @@ class AiConfig {
   /// added ~4 s. Persona answers come from checked templates instead.
   static const explainWithAi = false;
 
+  /// Voice engine: 'android' = Android's on-device recognizer (offline, live
+  /// partial results); 'whisper' = Cactus Whisper (decoded only ~1 word per
+  /// clip on the demo phone, kept as an option).
+  static const voiceEngine = 'android';
+  static const voiceLocales = ['fil_PH', 'fil-PH', 'en_PH', 'en-PH', 'en_US', 'en-US'];
+  static const voicePhrases = ['Tara', 'hey Tara', 'LB', 'Los Baños', 'jeep', 'trike', 'Grab', 'Katipunan', 'España',
+    'aabot', 'umuulan', 'nandito na ako', 'papunta', 'pauwi', 'overcharge', 'pesos'];
+
   /// Speech-to-text (Whisper). Fallback: 'whisper-tiny'.
   static const sttModel = 'whisper-base';
 
   /// Vision model for Grab screenshots.
   static const visionModel = 'lfm2-vl-450m';
   static const visionEnabled = true;
+
+  /// Longest image side fed to the vision model (memory!).
+  static const visionMaxSide = 768;
 
   static const contextSize = 2048;
   static const temperature = 0.2;
