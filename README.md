@@ -39,7 +39,7 @@ invents or drops a number.
 | Voice → text | **On-device**: Android on-device speech recognizer (offline language pack), or Cactus Whisper (`whisper-*`) |
 | Stats, verdicts, fare check, XP, quests | **On-device**: plain Dart code |
 | Storage (trips, GPS points, steps, XP, friends) | **On-device**: SQLite |
-| **Internet** | **Only the one-time model download** on first launch. After that, Tara works fully in airplane mode. |
+| **Internet** | **Only one-time model downloads**: the text model on first launch, and the vision model the first time you import a screenshot. After that, Tara works fully in airplane mode. |
 
 Notes:
 - Cactus telemetry is disabled (`CactusConfig.isTelemetryEnabled = false`) and only local completion mode is used, with no cloud fallback.

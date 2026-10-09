@@ -36,10 +36,11 @@ class CactusAI implements LocalAI {
 
   @override
   Future<void> download({Progress? onProgress}) async {
+    // Baseline install: only the text model. Vision downloads the first time a
+    // screenshot is imported; Whisper only if it's the selected voice engine.
     final steps = [
       (AiConfig.textModel, 'Tara’s brain'),
-      (AiConfig.sttModel, 'Tara’s ears'),
-      if (AiConfig.visionEnabled) (AiConfig.visionModel, 'Tara’s eyes'),
+      if (AiConfig.voiceEngine == 'whisper') (AiConfig.sttModel, 'Tara’s ears'),
     ];
     for (var i = 0; i < steps.length; i++) {
       final (slug, label) = steps[i];

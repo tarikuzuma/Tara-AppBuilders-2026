@@ -106,7 +106,7 @@ class _LogTripScreenState extends State<LogTripScreen> {
     }
     setState(() {
       busy = true;
-      status = 'Binabasa ang screenshot (vision model, on-device)…';
+      status = 'Binabasa ang screenshot on-device… (first time: one-time download ng vision model)';
     });
     try {
       final raw = await s.ai.readImage(img.path, kTripExtractPrompt);

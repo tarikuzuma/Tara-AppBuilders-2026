@@ -53,7 +53,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 style: T.b(17, color: T.muted)),
             const SizedBox(height: 28),
             _point(Icons.download_for_offline_outlined, 'Download once, offline forever',
-                'Tara’s brain, ears and eyes (~1 GB) download one time. After that, airplane mode is fine.'),
+                'Tara’s brain (a few hundred MB) downloads one time. After that, airplane mode is fine. Screenshot reading downloads only if you use it.'),
             _point(Icons.lock_outline, 'Walang lumalabas sa phone mo',
                 'Trips, GPS and voice stay on this device. No account, no cloud.'),
             _point(Icons.translate, 'Kahit Taglish, gets ko', '“Uulan daw, aabot ba ako by 8 kung mag-jeep?”'),
