@@ -248,7 +248,7 @@ class _LogTripScreenState extends State<LogTripScreen> {
               color: T.oliveSoft,
               border: T.oliveLine,
               padding: 12,
-              child: Text('Tracked trip · ${km?.toStringAsFixed(1) ?? '0'} km · GPS stayed on this phone.',
+              child: Text((km ?? 0) >= 0.1 ? 'Tracked trip · ${km!.toStringAsFixed(1)} km · GPS stayed on this phone.' : 'Tracked trip · GPS stayed on this phone.',
                   style: T.b(14, color: T.olive, w: FontWeight.w600)),
             ),
           if (smart && !widget.review) ...[
@@ -261,7 +261,7 @@ class _LogTripScreenState extends State<LogTripScreen> {
             ),
             const SizedBox(height: 10),
             Row(children: [
-              Expanded(child: PrimaryButton('Fill the form', icon: Icons.auto_awesome, onTap: busy ? null : _understand)),
+              Expanded(child: PrimaryButton('Punan mo, Tara', icon: Icons.auto_awesome, onTap: busy ? null : _understand)),
               const SizedBox(width: 10),
               SizedBox(
                 height: 54,

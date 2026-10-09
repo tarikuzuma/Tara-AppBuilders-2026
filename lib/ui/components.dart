@@ -177,12 +177,14 @@ class FactsCard extends StatelessWidget {
           const Icon(Icons.verified_user_outlined, size: 17, color: T.olive),
           const SizedBox(width: 6),
           Text('CODE-CHECKED FACTS', style: T.kicker()),
+          if (guardBlocked) ...[
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: T.oliveLine)),
-            child: Text(guardBlocked ? 'AI reply blocked' : 'Numbers verified', style: T.b(11, color: T.olive, w: FontWeight.w600)),
+            child: Text('AI reply blocked', style: T.b(11, color: T.olive, w: FontWeight.w600)),
           ),
+          ],
         ]),
         const SizedBox(height: 12),
         IntrinsicHeight(

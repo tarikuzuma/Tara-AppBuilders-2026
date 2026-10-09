@@ -144,7 +144,7 @@ class _PlayerCard extends StatelessWidget {
           Row(children: [
             _stat(Icons.directions_walk, _n.format(s.stepsToday), 'steps today'),
             _stat(Icons.route, '${s.trips.length}', 'trips logged'),
-            _stat(Icons.shield_outlined, '${s.shields}', 'shields'),
+            if (s.shields > 0) _stat(Icons.shield_outlined, '${s.shields}', 'shields') else _stat(Icons.local_fire_department, '${s.streak}', 'day streak'),
           ]),
         ]),
       );

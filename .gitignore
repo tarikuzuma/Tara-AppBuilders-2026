@@ -51,3 +51,7 @@ app.*.map.json
 .env
 *.keystore
 local.properties
+
+# Kotlin build cache
+android/.kotlin/
+/dist/

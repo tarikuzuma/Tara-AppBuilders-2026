@@ -105,7 +105,7 @@ class _AskScreenState extends State<AskScreen> {
           child: Row(children: [
             Expanded(
               child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('YOUR COMMUTE COPILOT', style: T.kicker(color: T.muted)),
+                Text('OFFLINE, SA PHONE MO', style: T.kicker(color: T.muted)),
                 Text('Tanong kay Tara', style: T.h(21)),
               ]),
             ),
@@ -115,7 +115,7 @@ class _AskScreenState extends State<AskScreen> {
               child: Row(children: [
                 Icon(Icons.memory, size: 15, color: s.ai.ready ? T.olive : T.faint),
                 const SizedBox(width: 5),
-                Text(s.ai.ready ? 'Local AI' : 'Basic mode', style: T.b(12, w: FontWeight.w700)),
+                Text(s.ai.ready ? 'On-device AI' : 'Basic mode', style: T.b(12, w: FontWeight.w700)),
               ]),
             ),
           ]),
@@ -321,12 +321,12 @@ class _AnswerBlock extends StatelessWidget {
           Text(a.text, style: T.b(16, height: 1.5)),
           const SizedBox(height: 8),
           Row(children: [
-            Icon(a.aiExplained ? Icons.memory : Icons.rule, size: 14, color: T.faint),
+            Icon(a.aiExplained ? Icons.memory : Icons.verified_outlined, size: 14, color: T.faint),
             const SizedBox(width: 4),
             Text(
               a.aiExplained
-                  ? 'Written on-device by ${s.persona[0].toUpperCase()}${s.persona.substring(1)} Tara'
-                  : (a.guardBlocked ? 'AI reply had an unverified number — showing checked answer' : 'Checked template answer'),
+                  ? 'Sinulat ni ${s.persona[0].toUpperCase()}${s.persona.substring(1)} Tara, offline'
+                  : (a.guardBlocked ? 'AI reply had an unverified number — showing checked answer' : 'Computed from your trips'),
               style: T.b(12, color: T.faint),
             ),
           ]),

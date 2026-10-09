@@ -93,7 +93,7 @@ class TaraBrain {
     final answer = TaraAnswer(text, TaraIntent());
     final intent = await understand(text, c, answer);
     final a = TaraAnswer(text, intent)..aiUnderstood = answer.aiUnderstood;
-    a.steps.add('Naintindihan: ${_describe(intent, c)}');
+    a.steps.add('Gets ko: ${_describe(intent, c)}');
     onStep?.call(a);
 
     _compute(a, c);
@@ -116,7 +116,8 @@ class TaraBrain {
         debugPrint('[tara] explain AI failed: $e');
       }
     }
-    if (!a.aiExplained && _explainable(intent.type)) {
+    final noData = a.headline.startsWith('Kulang pa') || a.facts.isEmpty;
+    if (!a.aiExplained && _explainable(intent.type) && !noData) {
       final opener = kPersonaOpener[c.persona] ?? '';
       final body = opener.isEmpty ? a.text : '$opener${a.text[0].toLowerCase()}${a.text.substring(1)}';
       a.text = '$body ${kPersonaSignoff[c.persona] ?? ''}'.trim();
@@ -189,7 +190,7 @@ class TaraBrain {
         if (s.isEmpty) return _noData(a, routeLabel, mode);
         final v = verdictFor(c.now, arrive, s);
         a.facts = [
-          Fact('${s.p80Min}', 'mins · p80'),
+          Fact('${s.p80Min}', 'mins, safe estimate'),
           Fact('${s.count}', i.rain == true && !s.relaxed.contains('tags') ? 'rainy trips' : 'past trips'),
           Fact(hhmm(v.leaveBy!), 'leave by'),
         ];
@@ -215,7 +216,7 @@ class TaraBrain {
               a.altMode = alt.mode;
               a.text += ' ${modeLabel(alt.mode)} na lang? ${alt.stats.p80Min} mins lang'
                   '${alt.stats.avgFare != null ? ', mga ₱${alt.stats.avgFare!.round()}' : ''}.';
-              a.facts.add(Fact('${alt.stats.p80Min}', '${modeLabel(alt.mode)} mins'));
+              a.facts.add(Fact('${alt.stats.p80Min}', 'mins kung ${modeLabel(alt.mode)}'));
               a.followUp = 'Eh kung ${modeLabel(alt.mode)}?';
             }
           case VerdictKind.unknown:
@@ -231,7 +232,7 @@ class TaraBrain {
             '80% ng trips mo, under ${s.p80Min} mins.';
         a.facts = [
           Fact('${s.medianMin}', 'mins · median'),
-          Fact('${s.p80Min}', 'mins · p80'),
+          Fact('${s.p80Min}', 'mins, safe estimate'),
           Fact('${s.count}', 'past trips'),
           if (s.avgFare != null) Fact('₱${s.avgFare!.round()}', 'avg fare'),
         ];
@@ -246,9 +247,9 @@ class TaraBrain {
             '${best.stats.avgFare != null ? ' (mga ₱${best.stats.avgFare!.round()})' : ''}'
             '${rest.isNotEmpty ? ' vs $rest' : ''}.';
         a.facts = [
-          for (final o in opts.take(3)) Fact('${o.stats.p80Min}', '${modeLabel(o.mode)} mins'),
+          for (final o in opts.take(3)) Fact('${o.stats.p80Min}', 'mins kung ${modeLabel(o.mode)}'),
         ];
-        a.footer = '$routeLabel · p80 per mode${i.rain == true ? ' · Rain' : ''}';
+        a.footer = '$routeLabel · safe estimate per mode${i.rain == true ? ' · Rain' : ''}';
       case 'cost':
         final s = statsWithRelaxation(c.trips, StatsQuery(originId: origin, destinationId: dest, mode: mode, tags: rainTags));
         if (s.avgFare == null) return _noData(a, routeLabel, mode);
@@ -284,7 +285,7 @@ class TaraBrain {
             a.headline = 'Mura pa nga!';
             a.text = 'Mas mababa ang $asked kaysa usual mo na $range.';
           case FareVerdict.notEnoughData:
-            a.headline = 'Kulang pa data.';
+            a.headline = 'Kulang pa ang data ko.';
             a.text = '${fc.pastTrips} trips pa lang ang may fare sa route na ’to — di ko pa masabi kung overcharge.';
         }
       case 'start_trip':
@@ -344,14 +345,14 @@ class TaraBrain {
   }
 
   void _noData(TaraAnswer a, String route, String mode) {
-    a.headline = 'Kulang pa data.';
+    a.headline = 'Kulang pa ang data ko.';
     a.text = 'Wala pa akong ${modeWord(mode)} trips sa $route. I-log mo muna ang ilang biyahe!';
     a.facts = [];
   }
 
   String _relaxNote(RouteStats s) {
     if (s.relaxed.isEmpty) return '';
-    if (s.relaxed.contains('tags')) return ' · kulang rainy trips, all trips used';
+    if (s.relaxed.contains('tags')) return ' · konti pa ang rainy trips, ginamit lahat';
     return ' · widened filter';
   }
 
