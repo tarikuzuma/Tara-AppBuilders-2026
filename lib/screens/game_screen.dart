@@ -9,6 +9,8 @@ import '../game/barkada_card.dart';
 import '../game/shop.dart';
 import '../game/xp_engine.dart';
 import '../ui/components.dart';
+import '../ui/profile.dart';
+import 'package:image_picker/image_picker.dart';
 import '../ui/theme.dart';
 import 'settings_screen.dart';
 
@@ -35,7 +37,7 @@ class _GameScreenState extends State<GameScreen> {
             SizedBox(
               height: 70,
               child: Row(children: [
-                const Brandmark(),
+                const ProfileButton(),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -396,7 +398,14 @@ class _Barkada extends StatelessWidget {
               child: QrImageView(data: encodeCard(card), size: 230, eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: T.ink)),
             ),
             const SizedBox(height: 14),
-            Text('${card.name} · ${card.title} · ${_n.format(card.xp)} XP this week · 🔥${card.streak}', style: T.b(14, w: FontWeight.w600)),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              Avatar(emoji: card.avatar, color: card.color, size: 32),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text('${card.name} · ${card.title} · ${_n.format(card.xp)} XP this week · 🔥${card.streak}',
+                    style: T.b(14, w: FontWeight.w600)),
+              ),
+            ]),
           ]),
         ),
       ),
@@ -441,13 +450,7 @@ class _Barkada extends StatelessWidget {
               ),
               child: Row(children: [
                 SizedBox(width: 22, child: Text('${i + 1}', style: T.h(15, color: T.faint))),
-                Container(
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(color: f.name == me.name ? T.ink : T.lime, borderRadius: BorderRadius.circular(13)),
-                  child: Text(f.name[0], style: T.h(16, color: f.name == me.name ? T.lime : T.ink)),
-                ),
+                Avatar(emoji: f.avatar, color: f.color, size: 40, ring: f.name == me.name),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -506,11 +509,44 @@ class _ScanScreen extends StatefulWidget {
 
 class _ScanScreenState extends State<_ScanScreen> {
   bool done = false;
+  final controller = MobileScannerController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  /// Friend sent their card as a screenshot (e.g. over Messenger): read it from a photo.
+  Future<void> _fromPhoto() async {
+    final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (img == null || !mounted) return;
+    final capture = await controller.analyzeImage(img.path);
+    final v = (capture == null || capture.barcodes.isEmpty) ? null : capture.barcodes.first.rawValue;
+    if (!mounted) return;
+    if (v == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Walang QR code sa photo na ’yan.')));
+      return;
+    }
+    done = true;
+    Navigator.pop(context, v);
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text('Scan a friend’s card', style: T.h(19))),
+        appBar: AppBar(
+          title: Text('Scan a friend’s card', style: T.h(19)),
+          actions: [
+            TextButton.icon(
+              onPressed: _fromPhoto,
+              icon: const Icon(Icons.photo_library_outlined, color: T.ink),
+              label: Text('From photo', style: T.b(14, w: FontWeight.w700)),
+            ),
+          ],
+        ),
         body: Stack(children: [
           MobileScanner(
+            controller: controller,
             onDetect: (capture) {
               if (done) return;
               final v = capture.barcodes.isEmpty ? null : capture.barcodes.first.rawValue;

@@ -5,6 +5,7 @@ import '../app_state.dart';
 import '../config/ai_config.dart';
 import '../data/models.dart';
 import '../ui/components.dart';
+import '../ui/profile.dart';
 import '../ui/theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -32,10 +33,10 @@ class SettingsScreen extends StatelessWidget {
             ]),
             _group('Profile', [
               _row(
-                leading: IconTile(Icons.person_outline, size: 38),
-                title: 'Name: ${s.name}',
-                sub: 'Shown on your barkada card',
-                onTap: () => _editName(context),
+                leading: Avatar(emoji: s.avatar, color: s.avatarColor, size: 38),
+                title: s.name,
+                sub: 'Name, avatar at kulay · shown on your barkada card',
+                onTap: () => showProfileSheet(context),
               ),
             ]),
             _group('Tara', [

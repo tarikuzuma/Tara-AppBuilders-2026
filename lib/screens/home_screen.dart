@@ -5,6 +5,7 @@ import '../app_state.dart';
 import '../main.dart';
 import '../stats/advisor.dart';
 import '../ui/components.dart';
+import '../ui/profile.dart';
 import '../ui/theme.dart';
 import '../ui/voice_sheet.dart';
 import 'log_trip_screen.dart';
@@ -133,7 +134,7 @@ class TopBar extends StatelessWidget {
     return SizedBox(
       height: 72,
       child: Row(children: [
-        const Brandmark(),
+        const ProfileButton(),
         const SizedBox(width: 12),
         Expanded(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
