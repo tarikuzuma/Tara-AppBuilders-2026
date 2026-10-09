@@ -15,6 +15,8 @@ String encodeCard(Friend f) {
     'sk': f.streak,
     'lv': f.level,
     't': f.title,
+    'a': f.avatar,
+    'c': f.color,
   });
   final body = base64Url.encode(utf8.encode(payload));
   return '$_prefix$body.${_checksum(body)}';
@@ -40,6 +42,8 @@ Friend? decodeCard(String raw) {
       streak: (m['sk'] as num).toInt(),
       level: (m['lv'] as num).toInt(),
       title: m['t'] as String,
+      avatar: (m['a'] as String?) ?? '🙂',
+      color: ((m['c'] as num?) ?? 0).toInt().clamp(0, 5),
     );
   } catch (_) {
     return null;

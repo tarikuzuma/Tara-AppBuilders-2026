@@ -55,3 +55,6 @@ local.properties
 # Kotlin build cache
 android/.kotlin/
 /dist/
+
+# Claude Code local state (agent worktrees)
+.claude/
