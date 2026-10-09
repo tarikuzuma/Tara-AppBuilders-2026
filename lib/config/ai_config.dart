@@ -1,8 +1,13 @@
 /// Every model choice lives here so the runtime/model can be swapped in one place.
 class AiConfig {
-  /// Text model for understanding + explaining (Cactus slug).
-  /// Fallback if too slow on the demo phone: 'gemma3-270m'.
-  static const textModel = 'qwen3-0.6';
+  /// Text model for understanding Taglish (Cactus slug). Measured on the demo
+  /// phone: gemma3-270m ≈ 3 s per request with clean JSON; qwen3-0.6 ≈ 9–18 s.
+  static const textModel = 'gemma3-270m';
+
+  /// Let the LLM rewrite code-computed answers in the persona's voice.
+  /// Off: at 270M it mostly echoed the question (rejected by the guard) and
+  /// added ~4 s. Persona answers come from checked templates instead.
+  static const explainWithAi = false;
 
   /// Speech-to-text (Whisper). Fallback: 'whisper-tiny'.
   static const sttModel = 'whisper-base';

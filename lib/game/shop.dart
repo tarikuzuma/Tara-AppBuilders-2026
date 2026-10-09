@@ -83,3 +83,11 @@ const kPersonaSignoff = <String, String>{
   'coach': 'Kaya mo ’yan!',
   'lola': 'Ingat ka, anak.',
 };
+
+/// Opening line used by template answers so each persona still sounds different.
+const kPersonaOpener = <String, String>{
+  'tito': '',
+  'conyo': 'Okay so, like, ',
+  'coach': 'Game plan: ',
+  'lola': 'Anak, ',
+};

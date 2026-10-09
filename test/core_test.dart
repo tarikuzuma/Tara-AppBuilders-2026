@@ -170,4 +170,21 @@ void main() {
       expect(fc.verdict, FareVerdict.overcharge);
     });
   });
+
+  test('seed supports the demo on any install weekday', () {
+    for (var d = 0; d < 7; d++) {
+      final when = DateTime(2026, 10, 10 + d, 7, 5);
+      final seed = generateSeed(when);
+      int n(String mode, {bool rain = false}) => seed.trips
+          .where((t) => t.originId == 'home' && t.destinationId == 'school' && t.mode == mode && t.timeBucket == 'am_rush')
+          .where((t) => !rain || t.tags.contains('rain'))
+          .length;
+      final trikeFares = seed.trips.where((t) => t.mode == 'tricycle' && t.originId == 'home' && t.destinationId == 'school').length;
+      // ignore: avoid_print
+      print('weekday ${when.weekday}: rainy jeep ${n('jeepney', rain: true)}, rainy grab ${n('grab', rain: true)}, trike $trikeFares');
+      expect(n('jeepney', rain: true), greaterThanOrEqualTo(3));
+      expect(n('grab', rain: true), greaterThanOrEqualTo(3));
+      expect(trikeFares, greaterThanOrEqualTo(3));
+    }
+  });
 }

@@ -319,7 +319,8 @@ TaraIntent mergeIntent(TaraIntent base, Map<String, dynamic>? ai, String text, L
   if (ai == null) return base;
   final out = base..fromAi = true;
   final type = ai['intent'] ?? ai['type'];
-  if (type is String && kIntentTypes.contains(type) && type != 'unknown' && !base.strong) out.type = type;
+  // Keywords decide the type when they can; the AI only resolves what they couldn't.
+  if (type is String && kIntentTypes.contains(type) && type != 'unknown' && base.type == 'unknown') out.type = type;
 
   final mode = ai['mode'];
   if (mode is String && kModes.contains(mode)) out.mode ??= mode;
@@ -378,4 +379,11 @@ bool passesNumberGuard(String reply, String facts, String question) {
     if (!allowed.contains(n)) return false;
   }
   return true;
+}
+
+/// The rewrite must also keep every number from the code-written draft —
+/// a reply that silently drops the answer is as bad as one that invents it.
+bool keepsDraftNumbers(String reply, String draft) {
+  final have = numbersIn(reply);
+  return numbersIn(draft).every(have.contains);
 }

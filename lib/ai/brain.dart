@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../config/ai_config.dart';
+
 import '../data/models.dart';
 import '../game/shop.dart';
 import '../stats/advisor.dart';
@@ -62,8 +64,9 @@ class TaraBrain {
     var intent = keywordParse(text, c.places);
     if (ai.ready) {
       try {
-        final raw = await ai.chat(kIntentSystem, intentPrompt(text, c.places), maxTokens: 120);
+        final raw = await ai.chat(kIntentSystem, intentPrompt(text, c.places), maxTokens: 60);
         final json = extractJsonObject(raw);
+        debugPrint('[tara] intent raw: ${raw.replaceAll('\n', ' ')}');
         intent = mergeIntent(intent, json, text, c.places);
         into?.aiUnderstood = json != null;
       } catch (e) {
@@ -93,11 +96,12 @@ class TaraBrain {
     _compute(a, c);
     onStep?.call(a);
 
-    if (_explainable(intent.type) && ai.ready && a.facts.isNotEmpty) {
+    if (AiConfig.explainWithAi && _explainable(intent.type) && ai.ready && a.facts.isNotEmpty) {
       try {
         final style = kPersonaStyle[c.persona] ?? kPersonaStyle['tito']!;
         final reply = await ai.chat(explainSystem(style), explainPrompt(text, a.factsText, a.text), maxTokens: 110);
         final cleaned = reply.replaceAll('"', '').trim();
+        debugPrint('[tara] explain raw: $cleaned');
         if (cleaned.isNotEmpty && passesNumberGuard(cleaned, '${a.factsText}\n${a.text}', text)) {
           a.text = cleaned;
           a.aiExplained = true;
@@ -110,7 +114,9 @@ class TaraBrain {
       }
     }
     if (!a.aiExplained && _explainable(intent.type)) {
-      a.text = '${a.text} ${kPersonaSignoff[c.persona] ?? ''}'.trim();
+      final opener = kPersonaOpener[c.persona] ?? '';
+      final body = opener.isEmpty ? a.text : '$opener${a.text[0].toLowerCase()}${a.text.substring(1)}';
+      a.text = '$body ${kPersonaSignoff[c.persona] ?? ''}'.trim();
     }
     a.steps.add(a.aiExplained ? 'Sinulat ni Tara ang sagot' : 'Sagot mula sa template (numbers checked)');
     if (intent.type != 'unknown') _last = intent;

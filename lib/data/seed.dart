@@ -37,7 +37,7 @@ SeedData generateSeed(DateTime now) {
   int noise(int span) => r.nextInt(span + 1);
 
   final today = dayOf(now);
-  var rainDays = 0;
+  var rainDays = 0, rainyAm = 0, dryAm = 0;
   for (var back = 28; back >= 1; back--) {
     final day = today.subtract(Duration(days: back));
     steps[day] = 5200 + r.nextInt(6200);
@@ -57,13 +57,13 @@ SeedData generateSeed(DateTime now) {
             start: leave, end: leave.add(Duration(minutes: mins)), fare: 42,
             tags: rain ? ['rain'] : [], source: 'seed', note: rain ? 'siksikan sa MRT pag umuulan' : null));
       } else {
-        if (!rain && (wd == DateTime.friday || wd == DateTime.wednesday)) {
+        if (!rain && (++dryAm).isEven) {
           final mins = 22 + noise(8);
           trips.add(Trip(
               id: id(), originId: 'home', destinationId: 'school', mode: 'tricycle',
               start: leave, end: leave.add(Duration(minutes: mins)), fare: 45.0 + 5 * (n % 4),
               source: 'seed'));
-        } else if (rain && rainDays % 3 == 0) {
+        } else if (rain && (++rainyAm).isEven) {
           final mins = 28 + noise(6);
           trips.add(Trip(
               id: id(), originId: 'home', destinationId: 'school', mode: 'grab',

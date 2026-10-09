@@ -60,7 +60,8 @@ class AppState extends ChangeNotifier {
 
   StreamSubscription<Position>? _gps;
   StreamSubscription<StepCount>? _steps;
-  final _recorder = AudioRecorder();
+  AudioRecorder? _rec;
+  AudioRecorder get _recorder => _rec ??= AudioRecorder();
   final _tts = FlutterTts();
 
   DateTime get now {
@@ -417,7 +418,7 @@ class AppState extends ChangeNotifier {
   void dispose() {
     _gps?.cancel();
     _steps?.cancel();
-    _recorder.dispose();
+    _rec?.dispose();
     super.dispose();
   }
 }
