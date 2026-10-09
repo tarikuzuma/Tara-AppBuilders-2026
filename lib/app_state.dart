@@ -13,6 +13,7 @@ import 'ai/brain.dart';
 import 'ai/local_ai.dart';
 import 'data/db.dart';
 import 'data/models.dart';
+import 'data/seed.dart';
 import 'game/quests.dart';
 import 'game/shop.dart';
 import 'game/xp_engine.dart';
@@ -92,6 +93,22 @@ class AppState extends ChangeNotifier {
     }
     await reload();
     _startSteps();
+  }
+
+  /// Fills state from seed data without a database (widget previews/tests).
+  @visibleForTesting
+  void preview() {
+    final seed = generateSeed(DateTime.now());
+    places = defaultPlaces();
+    trips = seed.trips..sort((a, b) => b.start.compareTo(a.start));
+    xpEvents = seed.xp;
+    owned = ['tito'];
+    friends = seed.friends;
+    steps = seed.steps;
+    stepsToday = 6240;
+    brain = TaraBrain(ai);
+    aiSkipped = true;
+    quests = pickQuests(QuestContext(trips, steps, now));
   }
 
   Future<void> reload() async {
