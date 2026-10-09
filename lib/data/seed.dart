@@ -57,7 +57,6 @@ SeedData generateSeed(DateTime now) {
             start: leave, end: leave.add(Duration(minutes: mins)), fare: 42,
             tags: rain ? ['rain'] : [], source: 'seed', note: rain ? 'siksikan sa MRT pag umuulan' : null));
       } else {
-        final roll = r.nextDouble();
         if (!rain && (wd == DateTime.friday || wd == DateTime.wednesday)) {
           final mins = 22 + noise(8);
           trips.add(Trip(
