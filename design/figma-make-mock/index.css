@@ -1,0 +1,392 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #17233c;
+  background: #dce2dc;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input { font: inherit; }
+button { color: inherit; }
+svg { display: block; }
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(360px, 510px) minmax(390px, 430px);
+  justify-content: center;
+  gap: 7vw;
+  align-items: center;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 17% 18%, rgba(210, 232, 111, .48), transparent 30%),
+    linear-gradient(135deg, #f3f1e8, #d9e0da);
+}
+
+.desktop-story { max-width: 510px; }
+.story-brand { display: flex; align-items: center; gap: 12px; font-family: "Manrope"; font-size: 23px; }
+.story-brand > span, .brandmark, .tara-orb {
+  display: grid; place-items: center; background: #d7ef6e; color: #17233c;
+  box-shadow: 0 8px 22px rgba(23, 35, 60, .13);
+}
+.story-brand > span { width: 46px; height: 46px; border-radius: 14px; font-weight: 800; }
+.desktop-story h2 { font: 800 clamp(48px, 5.5vw, 76px)/1.02 "Manrope"; letter-spacing: -.055em; margin: 70px 0 24px; color: #15213a; }
+.desktop-story h2 em { font-style: normal; color: #698231; }
+.desktop-story > p { max-width: 440px; font-size: 18px; line-height: 1.65; color: #566072; }
+.story-points { display: flex; flex-direction: column; gap: 15px; margin: 42px 0 80px; font-weight: 600; }
+.story-points span { display: flex; align-items: center; gap: 12px; }
+.story-points svg { color: #718a36; }
+.desktop-story small { font-size: 11px; letter-spacing: .19em; font-weight: 700; color: #758071; }
+
+.phone-frame {
+  height: min(900px, calc(100vh - 42px));
+  min-height: 680px;
+  background: #f7f5ee;
+  border: 8px solid #17233c;
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: 0 35px 80px rgba(28, 37, 47, .25), inset 0 0 0 1px rgba(255,255,255,.4);
+}
+
+.screen { height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; padding: 0 24px 100px; background: #f8f6ef; }
+.screen::-webkit-scrollbar { display: none; }
+.topbar { height: 87px; display: flex; align-items: center; border-bottom: 1px solid #e3e1d9; }
+.brandmark { width: 39px; height: 39px; border-radius: 13px; font: 800 18px "Manrope"; margin-right: 11px; box-shadow: none; }
+.topbar-title { display: flex; flex-direction: column; }
+.topbar-title strong, .ask-header strong { font: 800 18px "Manrope"; letter-spacing: -.03em; }
+.eyebrow { font-size: 9px; font-weight: 700; letter-spacing: .14em; color: #879087; }
+.status-pill, .local-badge { margin-left: auto; border: 1px solid #d9ded4; background: #fff; border-radius: 99px; padding: 7px 10px; display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; }
+.status-dot, .local-badge > span { width: 6px; height: 6px; border-radius: 50%; background: #6f9836; box-shadow: 0 0 0 3px #e9f2dd; }
+.player-strip { width: 100%; border: 0; border-bottom: 1px solid #e3e1d9; background: transparent; padding: 10px 1px; display: flex; align-items: center; gap: 9px; text-align: left; }
+.level-medal { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 11px; display: grid; place-items: center; background: #17233c; color: #d7ef6e; font: 800 11px "Manrope"; }
+.player-copy { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.player-copy strong { font: 700 10px "Manrope"; }
+.player-copy small { display: flex; align-items: center; gap: 6px; color: #89908a; font-size: 7px; }
+.player-copy i { width: 70px; height: 4px; border-radius: 4px; overflow: hidden; background: #dde1d7; }
+.player-copy em { display: block; width: 82%; height: 100%; background: #8ca34f; }
+.streak-count { display: grid; grid-template-columns: auto auto; align-items: center; gap: 3px; color: #c56b3d; }
+.streak-count strong { font: 800 13px "Manrope"; }
+.streak-count small { grid-column: 1 / -1; text-align: center; color: #989d98; font-size: 7px; }
+.tracking-card { margin-top: 14px; padding: 13px; display: flex; align-items: center; gap: 11px; border-radius: 16px; background: #e7f0d0; border: 1px solid #cedba8; }
+.tracking-pulse { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(106,129,52,.15); }
+.tracking-pulse i { width: 11px; height: 11px; border-radius: 50%; background: #6b8136; box-shadow: 0 0 0 5px rgba(107,129,54,.15); animation: trackPulse 1.3s infinite; }
+@keyframes trackPulse { 50% { box-shadow: 0 0 0 10px rgba(107,129,54,0); } }
+.tracking-card > div { display: flex; flex: 1; flex-direction: column; }
+.tracking-card > div > span { color: #667a38; font-size: 7px; letter-spacing: .11em; font-weight: 800; }
+.tracking-card > div > strong { font: 800 14px "Manrope"; margin-top: 2px; }
+.tracking-card > div > strong small { color: #6d7568; font: 500 8px "DM Sans"; margin-left: 4px; }
+.tracking-card p { margin: 2px 0 0; color: #77826c; font-size: 8px; }
+.tracking-card > button { border: 1px solid #bfcba0; background: #fff; border-radius: 8px; padding: 6px 8px; color: #68773f; font-size: 8px; font-weight: 700; }
+
+.hero-copy { padding: 28px 2px 17px; }
+.date-label, .section-kicker, .field-label, .group-label { font-size: 9px; letter-spacing: .17em; font-weight: 800; color: #788178; }
+.hero-copy h1 { margin: 7px 0 5px; font: 800 27px/1.15 "Manrope"; letter-spacing: -.045em; }
+.hero-copy h1 em { font-style: normal; color: #6a8134; }
+.hero-copy p { margin: 0; font-size: 13px; color: #6d7480; }
+
+.leave-card { background: #17233c; color: #fff; border-radius: 24px; padding: 22px; position: relative; box-shadow: 0 16px 30px rgba(23,35,60,.17); overflow: hidden; }
+.leave-card::after { content: ""; position: absolute; width: 140px; height: 140px; background: #d7ef6e; opacity: .06; border-radius: 50%; right: -55px; top: -60px; }
+.weather-orb { width: 49px; height: 49px; display: grid; place-items: center; border-radius: 15px; background: #d7ef6e; color: #17233c; position: absolute; right: 21px; top: 21px; }
+.leave-route { display: flex; gap: 13px; }
+.route-points { width: 12px; display: flex; align-items: center; flex-direction: column; padding-top: 6px; }
+.route-points i { width: 8px; height: 8px; border: 2px solid #d7ef6e; border-radius: 50%; }
+.route-points i:last-child { background: #d7ef6e; }
+.route-points span { width: 1px; height: 22px; background: #526079; }
+.route-labels { display: grid; gap: 10px; }
+.route-labels div { display: flex; flex-direction: column; }
+.route-labels span { font-size: 8px; letter-spacing: .14em; color: #8994aa; font-weight: 700; }
+.route-labels strong { font: 700 15px "Manrope"; }
+.leave-meta { display: flex; gap: 7px; margin-top: 20px; align-items: center; }
+.leave-meta > div { display: flex; align-items: center; gap: 6px; background: #24314c; padding: 8px 9px; border-radius: 10px; font-size: 10px; }
+.leave-meta svg { color: #d7ef6e; }
+.rain-toggle { margin-left: auto; border: 0; background: transparent; color: #aeb8c9; padding: 0; display: flex; align-items: center; gap: 6px; }
+.rain-toggle > span { display: flex; gap: 4px; font-size: 10px; }
+.rain-toggle i, .switch { width: 31px; height: 18px; border-radius: 20px; background: #4b5670; position: relative; transition: .2s; }
+.rain-toggle i::after, .switch span { content: ""; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: .2s; }
+.rain-toggle.on { color: white; }
+.rain-toggle.on i, .switch.on { background: #d7ef6e; }
+.rain-toggle.on i::after, .switch.on span { left: 16px; background: #17233c; }
+.leave-note { border-top: 1px solid #34415a; margin-top: 16px; padding-top: 13px; display: flex; align-items: center; gap: 8px; }
+.leave-note > span { color: #d7ef6e; }
+.leave-note p { margin: 0; color: #9da7b9; font-size: 10px; }
+.leave-note strong { color: white; }
+
+.ask-launch { margin-top: 27px; }
+.section-kicker { display: flex; align-items: center; gap: 5px; color: #6e813e; }
+.ask-launch h2, .section-heading h2 { margin: 6px 0 14px; font: 800 18px "Manrope"; letter-spacing: -.03em; }
+.ask-box { border: 1px solid #d9ddd2; background: #fff; border-radius: 17px; width: 100%; min-height: 59px; padding: 10px 10px 10px 17px; display: flex; align-items: center; justify-content: space-between; color: #767c82; text-align: left; box-shadow: 0 5px 16px rgba(28,35,40,.04); }
+.ask-box i { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: #d7ef6e; color: #17233c; }
+.voice-launch { width: 100%; display: flex; align-items: center; gap: 10px; border: 1px solid #d9ddd2; border-radius: 15px; background: #fff; padding: 9px 12px; margin-top: 8px; text-align: left; }
+.voice-launch > span { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: #17233c; color: #d7ef6e; }
+.voice-launch > div { display: flex; flex: 1; flex-direction: column; gap: 2px; }
+.voice-launch strong { font: 700 10px "Manrope"; }
+.voice-launch small { color: #8c918c; font-size: 8px; }
+.voice-launch > svg { color: #9ca19b; }
+.voice-launch.active { background: #f1f5e4; border-color: #cfd9b0; }
+.voice-wave { display: flex; align-items: center; gap: 2px; height: 18px; }
+.voice-wave b { width: 2px; height: 7px; border-radius: 3px; background: #71863c; animation: voiceWave .7s infinite alternate; }
+.voice-wave b:nth-child(2) { height: 15px; animation-delay: .2s; }.voice-wave b:nth-child(3) { height: 10px; animation-delay: .4s; }
+@keyframes voiceWave { to { height: 3px; } }
+.privacy-note { display: flex; justify-content: center; align-items: center; gap: 5px; color: #8a908b; font-size: 9px; margin-top: 9px; }
+.quest-teaser { width: 100%; margin-top: 20px; display: flex; align-items: center; gap: 10px; border: 1px solid #d9dec9; border-radius: 16px; background: #f2f6e7; padding: 12px; text-align: left; }
+.quest-icon { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 12px; background: #d7ef6e; color: #17233c; }
+.quest-teaser > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.quest-teaser > div > span { font-size: 7px; letter-spacing: .12em; font-weight: 800; color: #6b7d40; }
+.quest-teaser > div > strong { font: 700 10px "Manrope"; }
+.quest-teaser > div > small { color: #82897d; font-size: 8px; }
+.quest-teaser > div > i { display: block; width: 100%; height: 3px; margin-top: 3px; border-radius: 3px; overflow: hidden; background: #dce2cd; }
+.quest-teaser > div > i > em { display: block; width: 66%; height: 100%; background: #839946; }
+.quest-teaser > b { color: #657b31; font: 800 12px "Manrope"; }.quest-teaser > b small { font-size: 7px; }
+.recent-row { margin-top: 25px; }
+.section-heading { display: flex; align-items: baseline; justify-content: space-between; }
+.section-heading button { border: 0; background: none; font-size: 10px; font-weight: 700; color: #71873c; }
+.trip-mini, .trip-row { display: flex; align-items: center; gap: 11px; padding: 14px; background: #fff; border: 1px solid #e5e3dc; border-radius: 16px; }
+.trip-mode { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 12px; }
+.trip-mode.jeep { background: #edf4d5; color: #647b30; }
+.trip-mode.grab { background: #e5f1ed; color: #337763; }
+.trip-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.trip-main strong { font: 700 12px "Manrope"; display: flex; align-items: center; gap: 5px; }
+.trip-main span { color: #8a8f91; font-size: 9px; }
+.trip-main small { font-size: 9px; margin-top: 3px; }
+.trip-stat { text-align: right; display: flex; flex-direction: column; }
+.trip-stat strong { font: 700 12px "Manrope"; }
+.trip-stat span { color: #788078; font-size: 10px; margin-top: 3px; }
+
+.bottom-nav { position: absolute; z-index: 20; left: 0; right: 0; bottom: 0; height: 78px; background: rgba(255,255,255,.96); border-top: 1px solid #dfdfd9; display: grid; grid-template-columns: repeat(5, 1fr); padding: 9px 12px 8px; backdrop-filter: blur(12px); }
+.nav-item { border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #929790; font-size: 8px; font-weight: 600; }
+.nav-item.active { color: #60762d; }
+.nav-icon { min-height: 25px; display: grid; place-items: center; }
+.nav-log .nav-icon { width: 43px; height: 43px; margin-top: -24px; border-radius: 15px; background: #17233c; color: #d7ef6e; border: 4px solid #fff; box-shadow: 0 5px 14px rgba(23,35,60,.23); }
+
+.ask-screen { padding: 0 19px 164px; }
+.ask-header { height: 76px; margin: 0 -2px; display: flex; align-items: center; border-bottom: 1px solid #e1e1da; gap: 10px; }
+.ask-header > div { display: flex; flex-direction: column; }
+.icon-button { width: 34px; height: 34px; padding: 0; border: 1px solid #dcded7; border-radius: 11px; background: #fff; display: grid; place-items: center; }
+.local-badge { padding: 6px 8px; font-size: 8px; }
+.chat-area { padding-top: 23px; }
+.ask-empty { text-align: center; padding: 35px 6px; }
+.tara-orb { width: 59px; height: 59px; border-radius: 20px; margin: 0 auto 20px; }
+.ask-empty h1 { font: 800 23px "Manrope"; letter-spacing: -.04em; margin: 0 0 7px; }
+.ask-empty > p { font-size: 12px; line-height: 1.55; color: #747d80; max-width: 285px; margin: 0 auto; }
+.prompt-list { display: grid; gap: 8px; margin-top: 31px; }
+.prompt-list button { background: #fff; border: 1px solid #e0e1da; border-radius: 14px; padding: 13px 14px; display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 11px; }
+.message { max-width: 88%; font-size: 12px; line-height: 1.55; }
+.user-message { margin-left: auto; background: #17233c; color: white; border-radius: 18px 18px 4px 18px; padding: 13px 15px; }
+.answer-block { margin-top: 22px; }
+.tara-label { display: flex; align-items: center; gap: 7px; font-size: 9px; font-weight: 800; letter-spacing: .15em; margin-bottom: 8px; color: #667a37; }
+.tara-label span { width: 25px; height: 25px; display: grid; place-items: center; background: #d7ef6e; border-radius: 8px; }
+.tara-message { max-width: 100%; background: #fff; border: 1px solid #e0e1da; border-radius: 4px 19px 19px 19px; padding: 15px 17px; box-shadow: 0 5px 14px rgba(23,35,60,.04); }
+.tara-message p { margin: 0; }
+.tara-message strong { font-weight: 700; }
+.tara-message mark { background: #edf6c9; color: #4c6120; border-radius: 4px; padding: 1px 3px; font-weight: 700; }
+.answer-nudge { color: #6e7579; margin-top: 8px !important; }
+.facts-card { border: 1px solid #dce3c6; background: #f2f6e5; margin-top: 9px; border-radius: 15px; padding: 12px 14px; }
+.facts-title { display: flex; align-items: center; gap: 5px; color: #5d7330; }
+.facts-title strong { font-size: 8px; letter-spacing: .12em; }
+.facts-title span { margin-left: auto; font-size: 7px; border: 1px solid #ced9ae; background: white; border-radius: 10px; padding: 3px 6px; }
+.facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin: 11px 0 9px; }
+.facts-grid div { display: flex; flex-direction: column; border-right: 1px solid #d8dfc2; padding-left: 10px; }
+.facts-grid div:first-child { padding-left: 0; }
+.facts-grid div:last-child { border: 0; }
+.facts-grid span { font: 800 18px "Manrope"; color: #26341b; }
+.facts-grid small, .facts-card > p { color: #77816c; font-size: 8px; }
+.facts-card > p { margin: 0; border-top: 1px solid #d8dfc2; padding-top: 8px; }
+.follow-up { width: 100%; border: 1px solid #d7ddd0; background: #fff; border-radius: 13px; padding: 11px 13px; display: flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 11px; font-weight: 600; }
+.follow-up svg:last-child { margin-left: auto; color: #71853f; }
+.thinking { display: flex; align-items: center; gap: 5px; margin: 30px 0; color: #778078; font-size: 10px; }
+.thinking span { width: 6px; height: 6px; border-radius: 50%; background: #79903f; animation: bounce .9s infinite alternate; }
+.thinking span:nth-child(2) { animation-delay: .2s; }.thinking span:nth-child(3) { animation-delay: .4s; margin-right: 5px; }
+@keyframes bounce { to { transform: translateY(-5px); opacity: .45; } }
+.composer { position: absolute; left: 16px; right: 16px; bottom: 87px; display: flex; gap: 8px; background: #fff; border: 1px solid #daddd6; border-radius: 17px; padding: 7px; box-shadow: 0 8px 25px rgba(23,35,60,.1); z-index: 10; }
+.composer input { min-width: 0; flex: 1; border: 0; outline: none; padding: 4px 7px; color: #17233c; font-size: 11px; background: transparent; }
+.composer input::placeholder { color: #989d99; }
+.composer button { width: 37px; height: 37px; display: grid; place-items: center; border: 0; border-radius: 12px; background: #d7ef6e; }
+.composer .voice-compose { background: #edf0e8; color: #677269; }
+.composer .listening { background: #c66045; color: #fff; animation: trackPulse 1s infinite; }
+.composer .send-compose { background: #d7ef6e; }
+
+.secondary-screen { padding-bottom: 100px; }
+.page-title { padding: 26px 2px 19px; }
+.page-title.compact { padding-bottom: 22px; }
+.page-title h1 { margin: 7px 0 5px; font: 800 24px "Manrope"; letter-spacing: -.045em; }
+.page-title p { margin: 0; font-size: 11px; line-height: 1.5; color: #7d8384; }
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; background: #e9e8e1; padding: 4px; border-radius: 13px; margin-bottom: 13px; }
+.mode-tabs button { border: 0; background: transparent; border-radius: 10px; padding: 9px; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.mode-tabs button.active { background: #fff; box-shadow: 0 2px 8px rgba(23,35,60,.07); color: #60752e; }
+.log-card { background: #fff; border: 1px solid #e1e1da; border-radius: 20px; padding: 16px; }
+.note-preview { background: #f1f5e3; border-radius: 12px; padding: 12px; font-size: 11px; font-style: italic; margin-bottom: 17px; }
+.note-preview span { display: flex; align-items: center; gap: 4px; margin-top: 7px; font-size: 8px; color: #698034; font-style: normal; font-weight: 700; }
+.field-label { margin: 13px 0 7px; }
+.route-selector { border: 1px solid #e1e3dc; border-radius: 12px; padding: 11px; display: flex; justify-content: space-between; align-items: center; font: 700 11px "Manrope"; }
+.route-selector svg { color: #7c8e51; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
+.form-grid > div { background: #f6f5f0; border-radius: 11px; padding: 10px; display: flex; flex-direction: column; }
+.form-grid span { font-size: 7px; letter-spacing: .12em; color: #8d938e; font-weight: 700; }
+.form-grid strong { font: 700 11px "Manrope"; display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+.tag-row { display: flex; gap: 6px; }
+.tag-row button, .filter-row button { border: 1px solid #dedfd9; background: #fff; border-radius: 10px; padding: 7px 9px; font-size: 9px; }
+.tag-row button.selected, .filter-row button.active { border-color: #aec364; background: #f0f6d9; color: #536927; font-weight: 700; }
+.note-field { min-height: 43px; background: #f6f5f0; border-radius: 11px; padding: 12px; color: #727979; font-size: 10px; }
+.primary-button { width: 100%; border: 0; border-radius: 14px; padding: 13px; margin-top: 13px; background: #17233c; color: #fff; font-weight: 700; font-size: 11px; display: flex; justify-content: center; align-items: center; gap: 7px; }
+.primary-button.saved { background: #607b32; }
+.xp-toast { position: sticky; bottom: 88px; margin: 12px auto 0; width: 92%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 15px; background: #17233c; color: #fff; box-shadow: 0 10px 25px rgba(23,35,60,.25); }
+.xp-toast > span { font: 800 18px "Manrope"; color: #d7ef6e; }
+.xp-toast > div { display: flex; flex: 1; flex-direction: column; }.xp-toast strong { font: 700 10px "Manrope"; }.xp-toast small { color: #aab2c0; font-size: 8px; }
+.xp-toast > svg { color: #d7ef6e; }
+.filter-row { display: flex; gap: 6px; overflow: hidden; margin-bottom: 14px; }
+.filter-row button { border-radius: 99px; padding-inline: 13px; white-space: nowrap; }
+.trips-list { display: grid; gap: 8px; }
+.trip-row { border-radius: 15px; padding: 12px; }
+.view-switch { display: grid; grid-template-columns: 1fr 1fr; background: #e8e8e1; border-radius: 13px; padding: 4px; margin: -7px 0 14px; }
+.view-switch button { border: 0; background: transparent; border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10px; font-weight: 700; color: #7b827d; }
+.view-switch button.active { background: #fff; color: #5f752e; box-shadow: 0 2px 8px rgba(23,35,60,.07); }
+.map-view { padding-bottom: 12px; }
+.sync-card { display: flex; align-items: center; gap: 9px; border: 1px solid #dfe2d8; background: #fff; border-radius: 14px; padding: 10px 11px; margin-bottom: 10px; }
+.sync-icon { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: #edf4d8; color: #60762f; }
+.sync-card > div { display: flex; flex: 1; flex-direction: column; gap: 2px; }
+.sync-card strong { font: 700 10px "Manrope"; }
+.sync-card small { color: #8b918d; font-size: 8px; }
+.sync-card button { border: 0; border-radius: 8px; background: #17233c; color: #fff; padding: 6px 9px; font-size: 8px; font-weight: 700; }
+.map-canvas { position: relative; height: 290px; overflow: hidden; border: 1px solid #d9dcd4; border-radius: 20px; background-color: #edf0e8; background-image: linear-gradient(35deg, rgba(255,255,255,.55) 25%, transparent 25%), linear-gradient(215deg, rgba(218,226,210,.65) 26%, transparent 26%); box-shadow: inset 0 0 35px rgba(83,98,79,.08); }
+.map-roads { position: absolute; inset: 0; width: 100%; height: 100%; }
+.road { fill: none; stroke: #fff; stroke-width: 5; }
+.road.major { stroke-width: 8; }
+.route-line { fill: none; stroke: #738c39; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 3 7; }
+.route-line.shadow { stroke: #fff; stroke-width: 8; stroke-dasharray: none; }
+.district { position: absolute; color: #acb2aa; font-size: 7px; font-weight: 800; letter-spacing: .17em; }
+.district.d1 { left: 33px; top: 37px; }.district.d2 { left: 29px; bottom: 29px; }.district.d3 { right: 35px; bottom: 54px; }
+.map-label { position: absolute; color: #99a198; font-size: 7px; transform: rotate(-34deg); }
+.map-label.l1 { top: 111px; left: 112px; }.map-label.l2 { bottom: 56px; left: 76px; transform: rotate(8deg); }
+.map-pin { position: absolute; border: 0; background: transparent; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 2; }
+.map-pin > span { width: 36px; height: 36px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 12px 12px 12px 3px; transform: rotate(-45deg); background: #17233c; color: #d7ef6e; box-shadow: 0 5px 12px rgba(23,35,60,.25); font: 800 10px "Manrope"; }
+.map-pin > span > svg, .map-pin > span > b { transform: rotate(45deg); }
+.map-pin > span > b { font: inherit; }
+.map-pin > small { background: rgba(255,255,255,.9); border-radius: 6px; padding: 2px 5px; color: #17233c; font-size: 7px; font-weight: 700; box-shadow: 0 2px 6px rgba(23,35,60,.1); }
+.home-pin { left: 51px; top: 194px; }.school-pin { right: 78px; top: 49px; }.office-pin { right: 48px; bottom: 53px; }.cafe-pin { left: 124px; top: 102px; }
+.office-pin > span, .cafe-pin > span { width: 30px; height: 30px; border-radius: 10px 10px 10px 3px; background: #fff; color: #52652c; border-color: #f5f6f0; }
+.map-legend { position: absolute; left: 11px; bottom: 10px; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.9); border-radius: 8px; padding: 5px 7px; color: #737b72; font-size: 7px; }
+.map-legend i { width: 15px; height: 2px; border-top: 2px dashed #738c39; }
+.map-section-title { display: flex; justify-content: space-between; align-items: flex-end; margin: 20px 2px 10px; }
+.map-section-title h2 { margin: 3px 0 0; font: 800 17px "Manrope"; letter-spacing: -.03em; }
+.map-section-title > span { color: #909690; font-size: 8px; margin-bottom: 2px; }
+.route-frequency { background: #fff; border: 1px solid #e1e2dc; border-radius: 17px; overflow: hidden; }
+.route-frequency > button { width: 100%; display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 9px; border: 0; border-bottom: 1px solid #e9e9e4; background: #fff; padding: 11px 12px; text-align: left; }
+.route-frequency > button:last-child { border-bottom: 0; }
+.route-frequency > button.active { background: #f5f8ea; }
+.frequency-rank { font: 700 9px "Manrope"; color: #9ca29c; }
+.frequency-copy { display: flex; flex-direction: column; gap: 2px; }
+.frequency-copy strong { font: 700 10px "Manrope"; }
+.frequency-copy small { color: #8a918b; font-size: 8px; }
+.frequency-copy > i { display: block; width: 100%; height: 3px; margin-top: 4px; border-radius: 4px; overflow: hidden; background: #e5e8df; }
+.frequency-copy > i > em { display: block; height: 100%; border-radius: 4px; background: #879e4e; }
+.frequency-copy > i > em.full { width: 100%; }
+.frequency-copy > i > em.medium { width: 44%; }
+.frequency-copy > i > em.short { width: 19%; }
+.frequency-count { display: flex; flex-direction: column; align-items: flex-end; }
+.frequency-count strong { font: 800 13px "Manrope"; color: #506525; }
+.frequency-count small { font-size: 7px; color: #969b96; }
+.map-privacy { margin: 10px 0 0; display: flex; align-items: center; justify-content: center; gap: 5px; color: #8c928d; font-size: 8px; }
+.settings-group { margin-bottom: 22px; }
+.group-label { display: block; margin-bottom: 7px; padding-left: 3px; }
+.setting-row { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 11px; border: 0; border-bottom: 1px solid #e4e3dd; background: #fff; padding: 9px 13px; font-size: 11px; }
+.setting-row:first-of-type { border-radius: 15px 15px 0 0; }
+.setting-row:last-of-type { border-radius: 0 0 15px 15px; border: 0; }
+.setting-row:only-of-type { border-radius: 15px; }
+.setting-row > svg { margin-left: auto; color: #9ba09a; }
+.place-dot { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 9px; background: #eef3df; color: #657a36; font-size: 9px; font-weight: 800; }
+.setting-row.tall { padding-block: 12px; text-align: left; }
+.setting-icon { width: 34px; height: 34px; background: #eef3df; color: #657a36; display: grid; place-items: center; border-radius: 11px; }
+.setting-row > div { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+.setting-row small { color: #8a908b; font-size: 9px; }
+.switch { display: block; flex: 0 0 31px; }
+.device-card { display: grid; grid-template-columns: auto 1fr; gap: 11px; background: #17233c; color: #fff; border-radius: 18px; padding: 17px; position: relative; overflow: hidden; }
+.device-card > span { color: #d7ef6e; }
+.device-card strong { font: 700 12px "Manrope"; }
+.device-card p { margin: 4px 0 0; color: #aab2c1; font-size: 9px; line-height: 1.5; }
+.device-card small { grid-column: 2; color: #d7ef6e; font-size: 7px; font-weight: 800; letter-spacing: .14em; }
+.game-screen { padding-inline: 18px; }
+.game-header { height: 73px; display: flex; align-items: center; gap: 10px; }
+.game-header .brandmark { margin: 0; }.game-header .brandmark span { font: inherit; }
+.game-header > div:not(.brandmark) { display: flex; flex: 1; flex-direction: column; }
+.game-header strong { font: 800 15px "Manrope"; letter-spacing: -.02em; }
+.player-card { border-radius: 22px; padding: 17px; background: #17233c; color: #fff; box-shadow: 0 13px 28px rgba(23,35,60,.16); overflow: hidden; position: relative; }
+.player-card::after { content: ""; position: absolute; width: 140px; height: 140px; border: 28px solid rgba(215,239,110,.04); border-radius: 50%; right: -55px; top: -68px; }
+.player-card-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px; position: relative; z-index: 1; }
+.big-medal { width: 49px; height: 49px; border-radius: 15px; background: #d7ef6e; color: #17233c; display: grid; grid-template-columns: 1fr; place-items: center; position: relative; }
+.big-medal b { position: absolute; right: -4px; bottom: -4px; width: 19px; height: 19px; border-radius: 7px; display: grid; place-items: center; background: #fff; border: 2px solid #17233c; font: 800 7px "Manrope"; }
+.player-card-top > div { display: flex; flex-direction: column; }
+.player-card-top > div > span { color: #d7ef6e; font-size: 7px; letter-spacing: .13em; font-weight: 800; }
+.player-card-top h1 { margin: 2px 0; font: 800 17px "Manrope"; letter-spacing: -.03em; }
+.player-card-top p { margin: 0; color: #929daf; font-size: 8px; }
+.card-streak { display: grid; grid-template-columns: auto auto; align-items: center; gap: 3px; color: #efa36f; }
+.card-streak strong { font: 800 16px "Manrope"; }
+.card-streak small { grid-column: 1 / -1; color: #9ea7b7; font-size: 7px; }
+.xp-progress { margin-top: 17px; }
+.xp-progress > div { display: flex; justify-content: space-between; font-size: 8px; }
+.xp-progress span { color: #d7ef6e; font-weight: 700; }.xp-progress small { color: #8e99ab; }
+.xp-progress > i { display: block; height: 5px; border-radius: 5px; background: #34405a; margin-top: 6px; overflow: hidden; }
+.xp-progress em { display: block; width: 82%; height: 100%; background: #d7ef6e; border-radius: 5px; }
+.player-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; border-top: 1px solid #34405a; margin-top: 14px; padding-top: 13px; }
+.player-stats > span { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px; }
+.player-stats svg { color: #d7ef6e; }.player-stats b { font: 700 10px "Manrope"; }
+.player-stats small { grid-column: 1 / -1; color: #8e99ab; font-size: 7px; }
+.game-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; background: #e7e7e0; border-radius: 13px; padding: 4px; margin: 15px 0; }
+.game-tabs button { border: 0; border-radius: 10px; padding: 8px 3px; display: flex; align-items: center; justify-content: center; gap: 5px; background: transparent; color: #7d837e; font-size: 9px; font-weight: 700; }
+.game-tabs button.active { background: #fff; color: #5f752e; box-shadow: 0 2px 7px rgba(23,35,60,.07); }
+.panel-heading { display: flex; justify-content: space-between; align-items: flex-end; margin: 4px 2px 10px; }
+.panel-heading h2 { margin: 3px 0 0; font: 800 17px "Manrope"; letter-spacing: -.03em; }
+.panel-heading > span { color: #929791; font-size: 8px; margin-bottom: 2px; }
+.quest-card { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; padding: 12px; border: 1px solid #e0e1da; border-radius: 16px; background: #fff; margin-bottom: 8px; }
+.quest-card.featured { border-color: #ccd9a8; background: #f4f7e9; }
+.quest-badge { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: #d7ef6e; color: #536825; }
+.quest-badge.blue { background: #e5eeed; color: #46726a; }.quest-badge.navy { background: #e6e9ef; color: #53617d; }
+.quest-content { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.quest-content > span { color: #6d813d; font-size: 6px; letter-spacing: .1em; font-weight: 800; }
+.quest-content > strong { font: 700 10px "Manrope"; }
+.quest-content > p { margin: 0; color: #858b86; font-size: 8px; line-height: 1.4; }
+.quest-content > div { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+.quest-content > div > i { flex: 1; height: 4px; border-radius: 4px; background: #dfe3d8; overflow: hidden; }
+.quest-content > div > i > em { display: block; width: 66%; height: 100%; background: #7f9744; }.quest-content > div > i > em.four-fifths { width: 80%; }.quest-content > div > i > em.half { width: 50%; }
+.quest-content > div > b { color: #7a8475; font-size: 7px; white-space: nowrap; }
+.reward { display: flex; flex-direction: column; align-items: flex-end; color: #61762f; font: 800 10px "Manrope"; }.reward small { font-size: 6px; letter-spacing: .08em; }
+.ai-quest-note { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; padding: 10px; border-radius: 12px; background: #ecece6; color: #747b75; }
+.ai-quest-note svg { flex: 0 0 auto; color: #6e813e; }.ai-quest-note p { margin: 0; font-size: 7px; line-height: 1.5; }.ai-quest-note strong { color: #596258; }
+.shop-balance { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 13px; background: #17233c; color: #fff; }
+.shop-balance > span { color: #929caf; font-size: 7px; letter-spacing: .12em; font-weight: 700; }
+.shop-balance strong { display: flex; align-items: center; gap: 5px; color: #d7ef6e; font: 800 13px "Manrope"; }
+.active-persona { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; margin: 9px 0 18px; padding: 11px; border: 1px solid #d4ddba; border-radius: 14px; background: #f3f7e7; }
+.persona-avatar, .shop-avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: #d7ef6e; color: #17233c; font: 800 10px "Manrope"; }
+.active-persona > div { display: flex; flex-direction: column; }.active-persona > div > span { color: #718342; font-size: 6px; letter-spacing: .12em; font-weight: 800; }.active-persona strong { font: 700 10px "Manrope"; }.active-persona small { color: #82897e; font-size: 7px; font-style: italic; }
+.active-persona > svg { color: #6e8339; }
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.shop-item { display: flex; flex-direction: column; align-items: flex-start; padding: 12px; border: 1px solid #e0e1da; border-radius: 16px; background: #fff; }
+.shop-item.owned { border-color: #bfd083; background: #f5f8ec; }
+.shop-item:nth-child(2) .shop-avatar { background: #dce8ed; }.shop-item:nth-child(3) .shop-avatar { background: #f0e3d5; }.shop-item:nth-child(4) .shop-avatar { background: #e5e8f0; }
+.shop-item > strong { margin-top: 8px; font: 700 10px "Manrope"; }.shop-item p { min-height: 25px; margin: 3px 0 9px; color: #898f89; font-size: 7px; line-height: 1.4; }
+.shop-item button { width: 100%; min-height: 27px; border: 0; border-radius: 8px; background: #17233c; color: #fff; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 8px; font-weight: 700; }
+.shop-item button:disabled { background: #dfe3da; color: #899087; }
+.barkada-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.barkada-actions > button { min-width: 0; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 7px; border: 1px solid #dfe1d9; border-radius: 14px; background: #fff; padding: 10px; text-align: left; }
+.barkada-actions > button > span { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px; color: #5f752e; background: #edf3dc; }
+.barkada-actions > button > div { min-width: 0; display: flex; flex-direction: column; }.barkada-actions strong { font: 700 9px "Manrope"; }.barkada-actions small { color: #919691; font-size: 6px; white-space: nowrap; }.barkada-actions > button > svg { color: #989e98; }
+.mini-qr { display: grid !important; grid-template-columns: 1fr 1fr !important; padding: 6px; gap: 2px; background: #17233c !important; }
+.mini-qr i { width: 7px; height: 7px; border: 2px solid #d7ef6e; }.mini-qr i:last-child { grid-column: 2; }
+.leaderboard { border: 1px solid #dfe1da; border-radius: 16px; background: #fff; overflow: hidden; }
+.leader-row { display: grid; grid-template-columns: 15px auto 1fr auto auto; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid #eaebe6; }
+.leader-row:last-child { border-bottom: 0; }.leader-row.me { background: #f3f7e7; }
+.leader-row > b { color: #939993; font: 800 9px "Manrope"; }
+.friend-avatar { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 10px; background: #d7ef6e; font: 800 9px "Manrope"; }
+.leader-row:nth-child(2) .friend-avatar { background: #17233c; color: #d7ef6e; }.leader-row:nth-child(3) .friend-avatar { background: #dfe9ec; }.leader-row:nth-child(4) .friend-avatar { background: #eee2d8; }
+.leader-row > div { min-width: 0; display: flex; flex-direction: column; }.leader-row > div strong { font: 700 9px "Manrope"; }.leader-row > div strong small { margin-left: 3px; border-radius: 4px; padding: 2px 3px; background: #d7ef6e; color: #536526; font-size: 5px; }.leader-row > div > span { color: #939893; font-size: 7px; }
+.leader-row > p { margin: 0; display: flex; flex-direction: column; align-items: flex-end; }.leader-row > p strong { font: 700 9px "Manrope"; }.leader-row > p small { color: #9a9f9a; font-size: 6px; }
+.friend-streak { display: flex; align-items: center; gap: 2px; color: #c46d42; font-size: 8px; font-weight: 700; }
+
+@media (max-width: 860px) {
+  .app-shell { display: block; padding: 0; background: #f8f6ef; }
+  .desktop-story { display: none; }
+  .phone-frame { height: 100vh; min-height: 620px; border: 0; border-radius: 0; box-shadow: none; }
+}
