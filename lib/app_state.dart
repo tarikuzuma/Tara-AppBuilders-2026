@@ -13,6 +13,8 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'ai/brain.dart';
 import 'ai/local_ai.dart';
 import 'ai/prompts.dart';
+import 'ai/receipt.dart';
+import 'ai/receipt.dart';
 import 'config/ai_config.dart';
 import 'data/db.dart';
 import 'data/models.dart';
@@ -305,7 +307,9 @@ class AppState extends ChangeNotifier {
             'min=${a.intent.minutes} | ${a.headline}');
       } else if (name.endsWith('.png') || name.endsWith('.jpg')) {
         final raw = await ai.readImage(f.path, kTripExtractPrompt);
-        log('$name | vision ${sw.elapsedMilliseconds}ms -> ${raw.replaceAll('\n', ' ')}');
+        final r = parseReceipt(raw);
+        log('$name | vision ${sw.elapsedMilliseconds}ms -> fare=${r.fare} pickup=${r.pickup} dropoff=${r.dropoff} '
+            'min=${r.minutes} | raw: ${raw.replaceAll('\n', ' / ')}');
       }
     }
     return out;

@@ -22,6 +22,4 @@ DRAFT ANSWER: "$draft"
 Rewrite the draft answer in your own voice. Keep every number exactly as written.''';
 
 const kTripExtractPrompt =
-    'Read this ride-hailing receipt or app screenshot. Reply with JSON only: '
-    '{"fare": number or null, "pickup": string or null, "dropoff": string or null, '
-    '"minutes": number or null, "time": "HH:MM" or null}. Use null if not visible.';
+    'Read all the text in this image, line by line, exactly as written. Output only the text.';

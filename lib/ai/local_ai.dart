@@ -96,7 +96,7 @@ class CactusAI implements LocalAI {
       params: CactusCompletionParams(
         model: AiConfig.visionModel,
         temperature: 0.1,
-        maxTokens: 200,
+        maxTokens: 320,
         completionMode: CompletionMode.local,
       ),
     );
@@ -113,8 +113,16 @@ class CactusAI implements LocalAI {
     }
     // Feed raw PCM (parsed from the WAV's data chunk) instead of the file path:
     // the file path decoded only a single word on the demo phone.
-    final pcm = _wavPcm(await File(wavPath).readAsBytes());
-    final res = await _stt.transcribe(audioStream: Stream.value(pcm), prompt: AiConfig.whisperPrompt);
+    // cactus 1.3.0 pads short clips *after* mel normalisation, so Whisper sees
+    // noise for most of its 30 s window and stops after ~1 word. Pad the audio
+    // itself with real silence, reset state between clips, cap decoder tokens.
+    final pcm = _padTo30s(_wavPcm(await File(wavPath).readAsBytes()));
+    _stt.reset();
+    final res = await _stt.transcribe(
+      audioStream: Stream.value(pcm),
+      prompt: AiConfig.whisperPrompt,
+      params: CactusTranscriptionParams(maxTokens: 200),
+    );
     debugPrint('[tara-ai] stt ${res.totalTimeMs.round()}ms: ${res.text}');
     return res.text.replaceAll(RegExp(r'<\|[^|]*\|>'), '').trim();
   }
@@ -124,6 +132,12 @@ class CactusAI implements LocalAI {
     _lm.unload();
     _stt.unload();
     _loaded = null;
+  }
+
+  static Uint8List _padTo30s(Uint8List pcm16) {
+    const target = 16000 * 30 * 2; // 30 s of 16 kHz mono s16le
+    if (pcm16.length >= target) return Uint8List.sublistView(pcm16, 0, target);
+    return Uint8List(target)..setRange(0, pcm16.length, pcm16);
   }
 
   /// Returns the PCM samples of a 16 kHz mono 16-bit WAV (any header layout).

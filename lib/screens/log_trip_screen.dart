@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../ai/intent.dart';
 import '../ai/prompts.dart';
+import '../ai/receipt.dart';
 import '../app_state.dart';
 import '../data/models.dart';
 import '../stats/advisor.dart';
@@ -108,26 +109,23 @@ class _LogTripScreenState extends State<LogTripScreen> {
     });
     try {
       final raw = await s.ai.readImage(img.path, kTripExtractPrompt);
-      final j = extractJsonObject(raw) ?? {};
+      final r = parseReceipt(raw);
       if (!mounted) return;
       setState(() {
         mode = 'grab';
         aiFilled = {'mode'};
-        final f = j['fare'];
-        if (f is num && f > 0 && f < 5000) {
-          fare.text = f.round().toString();
+        if (r.fare != null && r.fare! > 0 && r.fare! < 5000) {
+          fare.text = r.fare!.round().toString();
           aiFilled.add('fare');
         }
-        final m = j['minutes'];
-        if (m is num && m > 0 && m < 300) {
-          minutes.text = m.round().toString();
+        if (r.minutes != null && r.minutes! > 0 && r.minutes! < 300) {
+          minutes.text = '${r.minutes}';
           aiFilled.add('minutes');
         }
-        final notes = [j['pickup'], j['dropoff']].whereType<String>().where((x) => x.trim().isNotEmpty).join(' → ');
+        final notes = [r.pickup, r.dropoff].whereType<String>().join(' → ');
         if (notes.isNotEmpty) note.text = notes;
-        for (final key in ['pickup', 'dropoff']) {
-          final v = j[key];
-          if (v is! String) continue;
+        for (final (key, v) in [('pickup', r.pickup), ('dropoff', r.dropoff)]) {
+          if (v == null) continue;
           final i = TaraIntent();
           resolvePlaces(v.toLowerCase(), s.places, i);
           if (i.destination != null) {
