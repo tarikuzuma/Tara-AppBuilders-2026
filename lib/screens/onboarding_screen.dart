@@ -45,7 +45,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Row(children: [Brandmark(size: 46), SizedBox(width: 12)]),
+            const Brandmark(size: 72),
             const SizedBox(height: 36),
             Text('Your commute,\nmas gets na.', style: T.h(36)),
             const SizedBox(height: 14),

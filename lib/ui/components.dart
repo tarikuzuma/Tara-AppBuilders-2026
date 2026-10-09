@@ -21,16 +21,15 @@ IconData tagIcon(String tag) => switch (tag) {
       _ => Icons.label_outline,
     };
 
+/// Tara.AI logo mark (assets/brand/tara_mark.png).
 class Brandmark extends StatelessWidget {
   const Brandmark({super.key, this.size = 40});
   final double size;
   @override
-  Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(color: T.lime, borderRadius: BorderRadius.circular(size * 0.33)),
-        child: Text('T', style: T.h(size * 0.45)),
+  Widget build(BuildContext context) => Semantics(
+        label: 'Tara.AI',
+        image: true,
+        child: Image.asset('assets/brand/tara_mark.png', width: size, height: size, filterQuality: FilterQuality.medium),
       );
 }
 
