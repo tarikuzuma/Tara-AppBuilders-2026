@@ -62,7 +62,10 @@ class TaraBrain {
 
   Future<TaraIntent> understand(String text, Context c, TaraAnswer? into) async {
     var intent = keywordParse(text, c.places);
-    if (ai.ready) {
+    // Fragments ("Jeep", "Hey") carry too little for the model and invite
+    // hallucination; keywords handle them.
+    final words = normalize(text).split(RegExp(r'[^a-z0-9₱]+')).where((w) => w.isNotEmpty).toSet().length;
+    if (ai.ready && words >= 4) {
       try {
         final raw = await ai.chat(kIntentSystem, intentPrompt(text, c.places), maxTokens: 60);
         final json = extractJsonObject(raw);

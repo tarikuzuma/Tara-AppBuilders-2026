@@ -6,7 +6,8 @@ const kIntentSystem =
 String intentPrompt(String message, List<Place> places) {
   final ids = places.map((p) => p.id).join('|');
   return '''JSON keys: intent (start_trip|stop_trip|can_i_make_it|when_to_leave|how_long|compare_modes|cost|fare_check|log_trip|unknown), destination ($ids|null), mode (jeepney|tricycle|grab|walk|bus|mrt_lrt|null), rain (true|false|null).
-"aabot ba ako sa 8 kung mag-jeep, umuulan" -> {"intent":"can_i_make_it","destination":"school","mode":"jeepney","rain":true}
+"papunta ako sa office, mag-bus ako" -> {"intent":"start_trip","destination":"office","mode":"bus","rain":null}
+"hello" -> {"intent":"unknown","destination":null,"mode":null,"rain":null}
 "$message" ->''';
 }
 

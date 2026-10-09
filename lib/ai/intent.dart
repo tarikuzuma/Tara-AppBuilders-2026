@@ -328,8 +328,9 @@ TaraIntent mergeIntent(TaraIntent base, Map<String, dynamic>? ai, String text, L
   out.origin ??= _placeIdFor(ai['origin'], places);
   out.destination ??= _placeIdFor(ai['destination'], places);
 
+  // Weather must be in the words themselves — small models copy prompt examples.
   final rain = ai['rain'];
-  if (rain is bool) out.rain ??= rain;
+  if (rain is bool && detectRain(normalize(text)) != null) out.rain ??= rain;
 
   final arr = ai['arrive_by'];
   if (!out.hasArrival && arr is String) {
