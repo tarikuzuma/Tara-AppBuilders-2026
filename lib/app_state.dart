@@ -12,6 +12,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ai/brain.dart';
 import 'ai/local_ai.dart';
+import 'ai/offline_stt.dart';
 import 'ai/prompts.dart';
 import 'ai/receipt.dart';
 import 'config/ai_config.dart';
@@ -264,13 +265,20 @@ class AppState extends ChangeNotifier {
     }
     final path = await _recorder.stop();
     if (path == null || !File(path).existsSync()) return '';
-    if (!ai.ready) return '';
     try {
-      return await ai.transcribe(path);
+      return await transcribeFile(path);
     } catch (e) {
       debugPrint('[tara] transcribe failed: $e');
       return '';
     }
+  }
+
+  /// Speech-to-text for a recorded WAV with the configured offline engine.
+  Future<String> transcribeFile(String path) async {
+    if (AiConfig.voiceEngine == 'sherpa') {
+      return await OfflineStt.I.isReady() ? OfflineStt.I.transcribe(path) : '';
+    }
+    return ai.ready ? ai.transcribe(path) : '';
   }
 
   Future<void> cancelListening() async {
@@ -290,7 +298,11 @@ class AppState extends ChangeNotifier {
       debugPrint('[tara-selftest] $l');
     }
 
-    final dir = Directory('${(await getApplicationDocumentsDirectory()).path}/selftest');
+    var dir = Directory('${(await getApplicationDocumentsDirectory()).path}/selftest');
+    // Release builds aren't run-as-able: also accept clips pushed with adb to
+    // /sdcard/Android/data/<pkg>/files/selftest.
+    final ext = await getExternalStorageDirectory().catchError((_) => null);
+    if ((!dir.existsSync() || dir.listSync().isEmpty) && ext != null) dir = Directory('${ext.path}/selftest');
     if (!dir.existsSync()) {
       log('No selftest folder.');
       return out;
@@ -302,7 +314,7 @@ class AppState extends ChangeNotifier {
       final name = f.uri.pathSegments.last;
       final sw = Stopwatch()..start();
       if (name.endsWith('.wav')) {
-        final text = await ai.transcribe(f.path);
+        final text = await transcribeFile(f.path);
         final tStt = sw.elapsedMilliseconds;
         final a = await brain.ask(text, ctx);
         log('$name | stt ${tStt}ms "$text" | brain ${sw.elapsedMilliseconds - tStt}ms -> ${a.intent.type} '

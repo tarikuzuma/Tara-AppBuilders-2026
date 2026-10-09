@@ -36,6 +36,19 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    // Store native libs compressed in the APK (onnxruntime alone is 22 MB
+    // uncompressed); Android extracts them once at install.
+    // The demo phone is arm64. Plugins (sherpa-onnx, ML Kit, objectbox) ship
+    // armeabi-v7a/x86_64 libs too, which --target-platform and abiFilters
+    // (overridden by the Flutter plugin) don't strip. Remove the excludes to
+    // run on an x86_64 emulator.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+            excludes += listOf("lib/armeabi-v7a/**", "lib/armeabi/**", "lib/x86/**", "lib/x86_64/**")
+        }
+    }
 }
 
 kotlin {
