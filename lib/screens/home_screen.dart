@@ -351,7 +351,8 @@ class LiveTripCard extends StatelessWidget {
     final s = AppState.I;
     final l = s.live!;
     final elapsed = DateTime.now().difference(l.draft.start).inMinutes;
-    final eta = l.etaMin == null ? null : l.draft.start.add(Duration(minutes: l.etaMin!));
+    // Show ETA on the app clock (demo clock aware): now + remaining minutes.
+    final eta = l.etaMin == null ? null : s.now.add(Duration(minutes: (l.etaMin! - elapsed).clamp(0, 999)));
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(

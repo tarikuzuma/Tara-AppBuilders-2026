@@ -126,7 +126,7 @@ class AppState extends ChangeNotifier {
   Future<bool> _modelsOnDisk() async {
     try {
       final docs = await getApplicationDocumentsDirectory();
-      for (final slug in [AiConfig.textModel, AiConfig.sttModel]) {
+      for (final slug in [AiConfig.textModel]) {
         final d = Directory('${docs.path}/models/$slug');
         if (!d.existsSync() || d.listSync().isEmpty) return false;
       }
@@ -442,10 +442,11 @@ class AppState extends ChangeNotifier {
     if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
     if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) return null;
     try {
-      return await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, timeLimit: Duration(seconds: 12)));
+      return await Geolocator.getLastKnownPosition() ??
+          await Geolocator.getCurrentPosition(
+              locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, timeLimit: Duration(seconds: 10)));
     } catch (_) {
-      return await Geolocator.getLastKnownPosition();
+      return null;
     }
   }
 
@@ -481,8 +482,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     final pos = await _position();
     if (pos == null) {
+      // Indoors / no fix yet: keep the timer and keep listening for GPS.
+      _gps = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 25),
+      ).listen(_addPoint, onError: (_) {});
       notifyListeners();
-      return 'Walang GPS permission — tatakbo pa rin ang timer.';
+      return 'Hinahanap pa ang GPS — tuloy ang timer.';
     }
     final near = nearestPlace(pos.latitude, pos.longitude);
     if (near != null && near.id != t.destinationId) t.originId = near.id;
@@ -517,8 +522,9 @@ class AppState extends ChangeNotifier {
     _gps?.cancel();
     _gps = null;
     live = null;
+    final now = DateTime.now();
     final t = l.draft
-      ..end = DateTime.now()
+      ..end = now.difference(l.draft.start).inMinutes < 1 ? l.draft.start.add(const Duration(minutes: 1)) : now
       ..km = double.parse(l.km.toStringAsFixed(2));
     notifyListeners();
     return t;
@@ -531,8 +537,10 @@ class AppState extends ChangeNotifier {
     final dest = morning ? 'school' : 'home';
     final mode = usualMode(trips, origin, dest) ?? 'jeepney';
     final arrive = nextArrival(now, hour: morning ? 8 : 18);
+    // "Not raining" should mean dry trips only, not all trips.
+    final pool = rainToggle ? trips : trips.where((t) => !t.tags.contains('rain')).toList();
     final s = statsWithRelaxation(
-        trips,
+        pool,
         StatsQuery(
             originId: origin,
             destinationId: dest,

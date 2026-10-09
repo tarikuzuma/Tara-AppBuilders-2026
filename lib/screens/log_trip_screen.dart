@@ -68,6 +68,7 @@ class _LogTripScreenState extends State<LogTripScreen> {
   Future<void> _understand() async {
     final text = typed.text.trim();
     if (text.isEmpty) return;
+    FocusScope.of(context).unfocus();
     setState(() {
       busy = true;
       status = s.ai.ready ? 'Iniintindi on-device…' : 'Iniintindi (basic mode)…';
