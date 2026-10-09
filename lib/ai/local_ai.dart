@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../config/ai_config.dart';
+import 'offline_stt.dart' show wavPcm;
 
 typedef Progress = void Function(double? fraction, String status);
 
@@ -117,7 +118,7 @@ class CactusAI implements LocalAI {
     // cactus 1.3.0 pads short clips *after* mel normalisation, so Whisper sees
     // noise for most of its 30 s window and stops after ~1 word. Pad the audio
     // itself with real silence, reset state between clips, cap decoder tokens.
-    final pcm = _padTo30s(_wavPcm(await File(wavPath).readAsBytes()));
+    final pcm = _padTo30s(wavPcm(await File(wavPath).readAsBytes()));
     _stt.reset();
     final res = await _stt.transcribe(
       audioStream: Stream.value(pcm),
@@ -139,19 +140,6 @@ class CactusAI implements LocalAI {
     const target = 16000 * 30 * 2; // 30 s of 16 kHz mono s16le
     if (pcm16.length >= target) return Uint8List.sublistView(pcm16, 0, target);
     return Uint8List(target)..setRange(0, pcm16.length, pcm16);
-  }
-
-  /// Returns the PCM samples of a 16 kHz mono 16-bit WAV (any header layout).
-  static Uint8List _wavPcm(Uint8List b) {
-    final d = ByteData.sublistView(b);
-    var i = 12;
-    while (i + 8 <= b.length) {
-      final id = String.fromCharCodes(b.sublist(i, i + 4));
-      final size = d.getUint32(i + 4, Endian.little);
-      if (id == 'data') return Uint8List.sublistView(b, i + 8, (i + 8 + size).clamp(0, b.length));
-      i += 8 + size + (size & 1);
-    }
-    return Uint8List.sublistView(b, 44);
   }
 
   static Future<String> _downscale(String path, int maxSide) async {

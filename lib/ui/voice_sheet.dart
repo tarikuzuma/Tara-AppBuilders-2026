@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../ai/brain.dart';
+import '../ai/offline_stt.dart';
 import '../app_state.dart';
 import '../config/ai_config.dart';
 import '../screens/log_trip_screen.dart';
@@ -15,9 +16,9 @@ Future<void> showVoiceSheet(BuildContext context) => showModalBottomSheet(
       builder: (_) => const VoiceSheet(),
     );
 
-enum _Phase { listening, transcribing, thinking, answered, typing }
+enum _Phase { downloading, listening, transcribing, thinking, answered, typing }
 
-/// "Hey Tara": tap-to-talk → on-device Whisper → same brain as typed questions.
+/// "Hey Tara": tap-to-talk → offline speech-to-text → same brain as typed questions.
 class VoiceSheet extends StatefulWidget {
   const VoiceSheet({super.key});
   @override
@@ -28,6 +29,7 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
   _Phase phase = _Phase.listening;
   String transcript = '';
   String? error;
+  double? progress;
   TaraAnswer? answer;
   final typed = TextEditingController();
   late final wave = AnimationController(vsync: this, duration: const Duration(milliseconds: 700))..repeat(reverse: true);
@@ -48,7 +50,11 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
   }
 
   Future<void> _start() async {
-    if (!s.ai.ready && AiConfig.voiceEngine != 'android') {
+    if (AiConfig.voiceEngine == 'sherpa' && !await OfflineStt.I.isReady()) {
+      if (!await _downloadVoiceModel()) return;
+    }
+    if (!mounted) return;
+    if (!s.ai.ready && AiConfig.voiceEngine == 'whisper') {
       setState(() {
         phase = _Phase.typing;
         error = 'Basic mode: walang voice model pa. I-type mo na lang.';
@@ -61,6 +67,29 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
         phase = _Phase.typing;
         error = 'Kailangan ng mic permission. I-type mo na lang muna.';
       });
+    }
+  }
+
+  /// One-time download of the offline voice model (first mic use only).
+  Future<bool> _downloadVoiceModel() async {
+    setState(() {
+      phase = _Phase.downloading;
+      progress = 0;
+    });
+    try {
+      await OfflineStt.I.download(onProgress: (p, _) {
+        if (mounted) setState(() => progress = p);
+      });
+      return true;
+    } catch (e) {
+      debugPrint('[tara-voice] model download failed: $e');
+      if (mounted) {
+        setState(() {
+          phase = _Phase.typing;
+          error = 'Di ma-download ang voice model — kailangan ng internet sa unang beses lang. I-type mo na lang muna.';
+        });
+      }
+      return false;
     }
   }
 
@@ -143,6 +172,29 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
 
   List<Widget> _body() {
     switch (phase) {
+      case _Phase.downloading:
+        final pct = ((progress ?? 0) * 100).round();
+        return [
+          Text('Dina-download ang voice model… $pct%', style: T.h(22)),
+          const SizedBox(height: 6),
+          Text('Isang beses lang ito (~${AiConfig.sherpaDownloadMb} MB). Pagkatapos, offline na ang boses mo — '
+              'hindi umaalis sa phone.', style: T.b(15, color: T.muted)),
+          const SizedBox(height: 18),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(value: progress, minHeight: 8, color: T.olive, backgroundColor: T.line),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: TextButton(
+              onPressed: () => setState(() {
+                phase = _Phase.typing;
+                error = null;
+              }),
+              child: Text('I-type na lang', style: T.b(14, color: T.muted, w: FontWeight.w600)),
+            ),
+          ),
+        ];
       case _Phase.listening:
         return [
           Text('Nakikinig ako…', style: T.h(24)),
@@ -213,7 +265,7 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 12),
           PrimaryButton('Send kay Tara', icon: Icons.send, onTap: () => typed.text.trim().isEmpty ? null : _run(typed.text)),
-          if (s.ai.ready) ...[
+          if (s.ai.ready || AiConfig.voiceEngine != 'whisper') ...[
             const SizedBox(height: 4),
             Center(
               child: TextButton(

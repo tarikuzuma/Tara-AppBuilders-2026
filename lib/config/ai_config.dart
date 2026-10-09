@@ -12,7 +12,26 @@ class AiConfig {
   /// Voice engine: 'android' = Android's on-device recognizer (offline, live
   /// partial results); 'whisper' = Cactus Whisper (decoded only ~1 word per
   /// clip on the demo phone, kept as an option).
-  static const voiceEngine = 'android';
+  /// 'sherpa' (default) = sherpa-onnx Whisper tiny int8, fully offline after a
+  /// one-time ~104 MB download on first mic use; no language packs needed.
+  static const voiceEngine = 'sherpa';
+
+  /// sherpa-onnx Whisper size: 'tiny' (~104 MB, ~1.5 s per clip) or 'base'
+  /// (~161 MB, more accurate, ~2x slower). Plain int8 ONNX files from
+  /// Hugging Face at a pinned revision (no archive to extract).
+  static const sherpaPrefix = 'tiny';
+  static const sherpaModelDir = 'sherpa-whisper-$sherpaPrefix';
+  static const sherpaBaseUrl = 'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-$sherpaPrefix/resolve/'
+      '${sherpaPrefix == 'base' ? 'bb53ee204431c90d314c1cc08d28d23e5b7927cc' : '65176e2deb88badc814a94058666cadccc29b61c'}';
+  static const sherpaFileSizes = sherpaPrefix == 'base'
+      ? {'base-encoder.int8.onnx': 29120534, 'base-decoder.int8.onnx': 130672026, 'base-tokens.txt': 816730}
+      : {'tiny-encoder.int8.onnx': 12937772, 'tiny-decoder.int8.onnx': 89855401, 'tiny-tokens.txt': 816730};
+  static final sherpaFiles = sherpaFileSizes.keys.toList();
+  static const sherpaDownloadMb = sherpaPrefix == 'base' ? 161 : 104;
+
+  /// Whisper language: 'en' keeps Taglish words as spoken; '' = auto-detect.
+  static const sherpaLanguage = 'en';
+
   static const voiceLocales = ['fil_PH', 'fil-PH', 'en_PH', 'en-PH', 'en_US', 'en-US'];
   static const voicePhrases = ['Tara', 'hey Tara', 'LB', 'Los Baños', 'jeep', 'trike', 'Grab', 'Katipunan', 'España',
     'aabot', 'umuulan', 'nandito na ako', 'papunta', 'pauwi', 'overcharge', 'pesos'];

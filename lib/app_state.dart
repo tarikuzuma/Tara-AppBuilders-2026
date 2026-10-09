@@ -12,8 +12,8 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import 'ai/brain.dart';
 import 'ai/local_ai.dart';
+import 'ai/offline_stt.dart';
 import 'ai/prompts.dart';
-import 'ai/receipt.dart';
 import 'ai/receipt.dart';
 import 'config/ai_config.dart';
 import 'data/db.dart';
@@ -261,13 +261,20 @@ class AppState extends ChangeNotifier {
     }
     final path = await _recorder.stop();
     if (path == null || !File(path).existsSync()) return '';
-    if (!ai.ready) return '';
     try {
-      return await ai.transcribe(path);
+      return await transcribeFile(path);
     } catch (e) {
       debugPrint('[tara] transcribe failed: $e');
       return '';
     }
+  }
+
+  /// Speech-to-text for a recorded WAV with the configured offline engine.
+  Future<String> transcribeFile(String path) async {
+    if (AiConfig.voiceEngine == 'sherpa') {
+      return await OfflineStt.I.isReady() ? OfflineStt.I.transcribe(path) : '';
+    }
+    return ai.ready ? ai.transcribe(path) : '';
   }
 
   Future<void> cancelListening() async {
@@ -299,7 +306,7 @@ class AppState extends ChangeNotifier {
       final name = f.uri.pathSegments.last;
       final sw = Stopwatch()..start();
       if (name.endsWith('.wav')) {
-        final text = await ai.transcribe(f.path);
+        final text = await transcribeFile(f.path);
         final tStt = sw.elapsedMilliseconds;
         final a = await brain.ask(text, ctx);
         log('$name | stt ${tStt}ms "$text" | brain ${sw.elapsedMilliseconds - tStt}ms -> ${a.intent.type} '
