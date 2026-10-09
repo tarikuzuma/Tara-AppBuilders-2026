@@ -52,6 +52,8 @@ class _VoiceSheetState extends State<VoiceSheet> with SingleTickerProviderStateM
   Future<void> _start() async {
     if (AiConfig.voiceEngine == 'sherpa' && !await OfflineStt.I.isReady()) {
       if (!await _downloadVoiceModel()) return;
+      if (!mounted || phase != _Phase.downloading) return; // user switched to typing
+      setState(() => phase = _Phase.listening);
     }
     if (!mounted) return;
     if (!s.ai.ready && AiConfig.voiceEngine == 'whisper') {

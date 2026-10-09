@@ -298,7 +298,11 @@ class AppState extends ChangeNotifier {
       debugPrint('[tara-selftest] $l');
     }
 
-    final dir = Directory('${(await getApplicationDocumentsDirectory()).path}/selftest');
+    var dir = Directory('${(await getApplicationDocumentsDirectory()).path}/selftest');
+    // Release builds aren't run-as-able: also accept clips pushed with adb to
+    // /sdcard/Android/data/<pkg>/files/selftest.
+    final ext = await getExternalStorageDirectory().catchError((_) => null);
+    if ((!dir.existsSync() || dir.listSync().isEmpty) && ext != null) dir = Directory('${ext.path}/selftest');
     if (!dir.existsSync()) {
       log('No selftest folder.');
       return out;

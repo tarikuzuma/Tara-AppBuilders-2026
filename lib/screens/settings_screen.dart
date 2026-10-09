@@ -44,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
                 leading: IconTile(Icons.memory, size: 38),
                 title: s.ai.ready ? 'On-device AI ready' : 'Basic mode (no AI)',
                 sub: s.ai.ready
-                    ? '${AiConfig.textModel} · ${AiConfig.sttModel} · ${AiConfig.visionModel}'
+                    ? '${AiConfig.textModel} · ${AiConfig.voiceEngine == 'sherpa' ? 'whisper-${AiConfig.sherpaPrefix} (sherpa-onnx)' : AiConfig.sttModel} · ${AiConfig.visionModel}'
                     : 'Download once to enable Taglish AI, voice and screenshots',
                 trailing: s.ai.ready
                     ? const Icon(Icons.check_circle, color: T.olive)

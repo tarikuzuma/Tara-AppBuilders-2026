@@ -171,7 +171,12 @@ Uint8List wavPcm(Uint8List b) {
 /// Whisper has no hotword support, so nudge common mishearings of the words
 /// Tara listens for (place names, modes, Taglish phrases) back into shape.
 String applyVoiceBias(String s) {
-  var t = s.trim();
+  // Whisper labels noise/silence ("(crickets chirping)", "[BLANK_AUDIO]",
+  // "*music*") and hallucinates stock phrases on near-silence: drop those so
+  // the sheet asks the user to repeat instead.
+  var t = s.replaceAll(RegExp(r'\([^)]*\)|\[[^\]]*\]|\*[^*]*\*|♪+'), ' ').trim();
+  if (RegExp(r'^(?:thank you|thanks for watching|you|bye|okay)[.!]*$', caseSensitive: false).hasMatch(t)) return '';
+  if (!RegExp(r'[A-Za-z0-9]').hasMatch(t)) return '';
   for (final (re, to) in _bias) {
     t = t.replaceAll(re, to);
   }
@@ -180,13 +185,19 @@ String applyVoiceBias(String s) {
 
 final _bias = <(RegExp, String)>[
   (RegExp(r'\b(?:hey|hi|hay),?\s+(?:terra|tarah|tera|tara|sara|dara)\b', caseSensitive: false), 'Hey Tara'),
+  (RegExp(r'^(?:terra|tarah|tera)\b', caseSensitive: false), 'Tara'),
   (RegExp(r'\bL\.?\s?B\.?(?=\W|$)'), 'LB'),
   (RegExp(r'\b(?:el\s?bee|elbee|el\s?bi)\b', caseSensitive: false), 'LB'),
-  (RegExp(r'\b(?:jeepney|jip|jeeb)\b', caseSensitive: false), 'jeep'),
+  (RegExp(r'\bmag-?\s?(?:geep|gip|jip|jeep)\b', caseSensitive: false), 'mag-jeep'),
+  (RegExp(r'\b(?:jeepney|jip|jeeb|gip|geep)\b', caseSensitive: false), 'jeep'),
+  (RegExp(r'\b(?:tryk|trik|trig|traik)\b', caseSensitive: false), 'trike'),
   (RegExp(r'\b(?:grab car|grub)\b', caseSensitive: false), 'Grab'),
+  (RegExp(r'\b(?:at about|a about|aa bout)\b', caseSensitive: false), 'aabot'),
   (RegExp(r'\bum?u\s?ulan\b', caseSensitive: false), 'umuulan'),
-  (RegExp(r'\bnan\s?dito\s?na\s?ako\b', caseSensitive: false), 'nandito na ako'),
+  (RegExp(r'\bnan\s?di[td]o\b', caseSensitive: false), 'nandito'),
+  (RegExp(r'\bnandito\W+(?:(?:na|and|an)\W+)?(?:n?a+k[iy]?o|na+[ck]o)\b', caseSensitive: false), 'nandito na ako'),
   (RegExp(r'\bpa\s?punta\b', caseSensitive: false), 'papunta'),
-  (RegExp(r'\bpa\s?uwi\b', caseSensitive: false), 'pauwi'),
+  (RegExp(r'\b(?:pa\s?uwi|paui|pauwee|pauwe)\b', caseSensitive: false), 'pauwi'),
   (RegExp(r'\bover\s?-?\s?charge\b', caseSensitive: false), 'overcharge'),
+  (RegExp(r'\be?spani(?:a|ard)\b', caseSensitive: false), 'España'),
 ];

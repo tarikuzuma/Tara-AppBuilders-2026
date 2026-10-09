@@ -9,6 +9,16 @@ void main() {
     expect(applyVoiceBias('Aabot ba ako by 8 kung mag jeepney?'), 'Aabot ba ako by 8 kung mag jeep?');
     expect(applyVoiceBias('Nan dito na ako'), 'nandito na ako');
     expect(applyVoiceBias('Track my location'), 'Track my location');
+    expect(applyVoiceBias('(crickets chirping)'), '');
+    expect(applyVoiceBias('[BLANK_AUDIO]'), '');
+    expect(applyVoiceBias('Thank you.'), '');
+    expect(applyVoiceBias('Hey Tara (music) nandito na ako'), 'Hey Tara nandito na ako');
+    // Real Whisper-tiny outputs from the demo phone's self-test clips.
+    expect(applyVoiceBias('Terra, Nandido and AAKio'), 'Tara, nandito na ako');
+    expect(applyVoiceBias('Tara, Nandido NAACO'), 'Tara, nandito na ako');
+    expect(applyVoiceBias('Gip Paui 50 minutes 15 pesos'), 'jeep pauwi 50 minutes 15 pesos');
+    expect(applyVoiceBias('At about BAKO by 8 Kong MagGeep?'), 'aabot BAKO by 8 Kong mag-jeep?');
+    expect(applyVoiceBias('80 Pesos S.A.Tryk Papuntang School'), '80 Pesos S.A.trike Papuntang School');
   });
 
   test('wavPcm reads the data chunk and tolerates an unfinished header', () {
