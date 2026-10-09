@@ -47,6 +47,10 @@ List<ModeOption> compareModes(List<Trip> trips, StatsQuery base) {
     final s = statsWithRelaxation(trips, base.copyWith(mode: mode));
     if (!s.isEmpty) options.add(ModeOption(mode, s));
   }
+  // When asking about a condition (e.g. rain), prefer modes with real data for it.
+  if (base.tags.isNotEmpty && options.any((o) => !o.stats.relaxed.contains('tags'))) {
+    options.removeWhere((o) => o.stats.relaxed.contains('tags'));
+  }
   options.sort((a, b) => a.stats.p80Min!.compareTo(b.stats.p80Min!));
   return options;
 }
@@ -70,3 +74,7 @@ String hhmmShort(DateTime t) {
 }
 
 String modeLabel(String mode) => kModeLabels[mode] ?? mode;
+
+/// Mode name as it reads mid-sentence ("jeepney mo", "Grab mo").
+String modeWord(String mode) =>
+    const {'jeepney', 'tricycle', 'bus', 'walk'}.contains(mode) ? modeLabel(mode).toLowerCase() : modeLabel(mode);

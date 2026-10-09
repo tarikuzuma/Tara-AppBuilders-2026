@@ -37,11 +37,13 @@ SeedData generateSeed(DateTime now) {
   int noise(int span) => r.nextInt(span + 1);
 
   final today = dayOf(now);
+  var rainDays = 0;
   for (var back = 28; back >= 1; back--) {
     final day = today.subtract(Duration(days: back));
     steps[day] = 5200 + r.nextInt(6200);
     if (back == 8) continue; // one missed day → streak resets a week ago
-    final rain = r.nextDouble() < 0.4;
+    final rain = back % 2 == 0 || back % 7 == 3; // ~55% rainy days (habagat season)
+    if (rain) rainDays++;
     final wd = day.weekday;
     DateTime at(int h, int m) => DateTime(day.year, day.month, day.day, h, m);
 
@@ -56,13 +58,13 @@ SeedData generateSeed(DateTime now) {
             tags: rain ? ['rain'] : [], source: 'seed', note: rain ? 'siksikan sa MRT pag umuulan' : null));
       } else {
         final roll = r.nextDouble();
-        if (!rain && (wd == DateTime.friday || roll < 0.2)) {
+        if (!rain && (wd == DateTime.friday || wd == DateTime.wednesday)) {
           final mins = 22 + noise(8);
           trips.add(Trip(
               id: id(), originId: 'home', destinationId: 'school', mode: 'tricycle',
-              start: leave, end: leave.add(Duration(minutes: mins)), fare: [45.0, 50.0, 50.0, 55.0, 60.0][r.nextInt(5)],
+              start: leave, end: leave.add(Duration(minutes: mins)), fare: 45.0 + 5 * (n % 4),
               source: 'seed'));
-        } else if (rain && roll < 0.3) {
+        } else if (rain && rainDays % 3 == 0) {
           final mins = 28 + noise(6);
           trips.add(Trip(
               id: id(), originId: 'home', destinationId: 'school', mode: 'grab',
@@ -87,6 +89,12 @@ SeedData generateSeed(DateTime now) {
         trips.add(Trip(
             id: id(), originId: from, destinationId: 'home', mode: 'tricycle',
             start: back2, end: back2.add(Duration(minutes: mins)), fare: [50.0, 55.0, 60.0][r.nextInt(3)], source: 'seed'));
+      } else if (rain && wd != DateTime.thursday && rainDays % 3 == 1) {
+        final mins = 30 + noise(8);
+        trips.add(Trip(
+            id: id(), originId: from, destinationId: 'home', mode: 'grab',
+            start: back2, end: back2.add(Duration(minutes: mins)), fare: 240.0 + noise(50),
+            tags: ['rain'], source: 'seed', note: 'surge pricing'));
       } else {
         final flood = rain && r.nextDouble() < 0.4;
         final mins = (rain ? 54 : 44) + noise(10);
