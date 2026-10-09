@@ -5,6 +5,7 @@ import '../app_state.dart';
 import '../config/ai_config.dart';
 import '../data/models.dart';
 import '../ui/components.dart';
+import '../ui/profile.dart';
 import '../ui/theme.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -32,10 +33,10 @@ class SettingsScreen extends StatelessWidget {
             ]),
             _group('Profile', [
               _row(
-                leading: IconTile(Icons.person_outline, size: 38),
-                title: 'Name: ${s.name}',
-                sub: 'Shown on your barkada card',
-                onTap: () => _editName(context),
+                leading: Avatar(emoji: s.avatar, color: s.avatarColor, size: 38),
+                title: s.name,
+                sub: 'Name, avatar at kulay · shown on your barkada card',
+                onTap: () => showProfileSheet(context),
               ),
             ]),
             _group('Tara', [
@@ -168,22 +169,6 @@ class SettingsScreen extends StatelessWidget {
         actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('OK'))],
       ),
     );
-  }
-
-  Future<void> _editName(BuildContext context) async {
-    final c = TextEditingController(text: AppState.I.name);
-    final v = await showDialog<String>(
-      context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Your name'),
-        content: TextField(controller: c, autofocus: true, maxLength: 24),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(d), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(d, c.text), child: const Text('Save')),
-        ],
-      ),
-    );
-    if (v != null) await AppState.I.setName(v);
   }
 
   Future<void> _editPlace(BuildContext context, Place p) async {

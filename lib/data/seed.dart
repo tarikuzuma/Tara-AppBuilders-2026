@@ -137,9 +137,9 @@ SeedData generateSeed(DateTime now) {
 
   final week = isoWeek(now);
   final friends = [
-    Friend(name: 'Bea', week: week, xp: 410, steps: 61200, streak: 9, level: 13, title: 'Street Smart'),
-    Friend(name: 'Paolo', week: week, xp: 260, steps: 40310, streak: 3, level: 8, title: 'Campus Navigator'),
-    Friend(name: 'Kaye', week: week, xp: 180, steps: 35870, streak: 2, level: 7, title: 'Lakbay Local'),
+    Friend(name: 'Bea', week: week, xp: 410, steps: 61200, streak: 9, level: 13, title: 'Street Smart', avatar: '🦊', color: 3),
+    Friend(name: 'Paolo', week: week, xp: 260, steps: 40310, streak: 3, level: 8, title: 'Campus Navigator', avatar: '😎', color: 1),
+    Friend(name: 'Kaye', week: week, xp: 180, steps: 35870, streak: 2, level: 7, title: 'Lakbay Local', avatar: '🌻', color: 2),
   ];
   return SeedData(trips, steps, xp, friends);
 }

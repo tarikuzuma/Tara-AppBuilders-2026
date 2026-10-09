@@ -14,7 +14,6 @@ import 'ai/brain.dart';
 import 'ai/local_ai.dart';
 import 'ai/prompts.dart';
 import 'ai/receipt.dart';
-import 'ai/receipt.dart';
 import 'config/ai_config.dart';
 import 'data/db.dart';
 import 'data/models.dart';
@@ -52,6 +51,8 @@ class AppState extends ChangeNotifier {
   Map<DateTime, int> steps = {};
   String persona = kDefaultPersona;
   String name = 'Mia';
+  String avatar = '🙂';
+  int avatarColor = 0;
   bool demoClock = true;
   bool speakReplies = false;
   bool modelsReady = false;
@@ -145,6 +146,8 @@ class AppState extends ChangeNotifier {
     steps = await db.dailySteps();
     persona = (await db.getSetting('persona')) ?? kDefaultPersona;
     name = (await db.getSetting('name')) ?? 'Mia';
+    avatar = (await db.getSetting('avatar')) ?? '🙂';
+    avatarColor = int.tryParse((await db.getSetting('avatar_color')) ?? '') ?? 0;
     stepsToday = steps[dayOf(now)] ?? stepsToday;
     quests = pickQuests(QuestContext(trips, steps, now));
     notifyListeners();
@@ -381,6 +384,8 @@ class AppState extends ChangeNotifier {
         streak: streak,
         level: xp.level,
         title: xp.title,
+        avatar: avatar,
+        color: avatarColor,
       );
 
   int _weekSteps() {
@@ -405,6 +410,13 @@ class AppState extends ChangeNotifier {
     speakReplies = on;
     await db.setSetting('tts', on ? '1' : '0');
     notifyListeners();
+  }
+
+  Future<void> setProfile(String n, String emoji, int color) async {
+    await db.setSetting('name', n.trim().isEmpty ? 'Mia' : n.trim());
+    await db.setSetting('avatar', emoji);
+    await db.setSetting('avatar_color', '$color');
+    await reload();
   }
 
   Future<void> setName(String n) async {

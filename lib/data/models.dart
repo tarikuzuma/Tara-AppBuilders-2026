@@ -154,6 +154,8 @@ class Friend {
   final int streak;
   final int level;
   final String title;
+  final String avatar; // emoji
+  final int color; // index into kAvatarColors
 
   Friend({
     required this.name,
@@ -163,6 +165,8 @@ class Friend {
     required this.streak,
     required this.level,
     required this.title,
+    this.avatar = '🙂',
+    this.color = 0,
   });
 
   Map<String, Object?> toRow() => {
@@ -173,6 +177,8 @@ class Friend {
         'streak': streak,
         'level': level,
         'title': title,
+        'avatar': avatar,
+        'color': color,
       };
 
   factory Friend.fromRow(Map<String, Object?> r) => Friend(
@@ -183,5 +189,13 @@ class Friend {
         streak: r['streak'] as int,
         level: r['level'] as int,
         title: r['title'] as String,
+        avatar: (r['avatar'] as String?) ?? '🙂',
+        color: (r['color'] as int?) ?? 0,
       );
 }
+
+/// Avatar choices for the profile (emoji only, nothing uploaded anywhere).
+const kAvatarEmojis = ['🙂', '😎', '🧑‍🎓', '👩‍💻', '🧑‍💼', '🐱', '🐶', '🦊', '🐸', '🌻', '⚡', '🚌'];
+
+/// Avatar background colours (ARGB), readable with an emoji on top.
+const kAvatarColors = [0xFFD7EF6E, 0xFFBFE3FF, 0xFFFFD6A5, 0xFFFFC2D1, 0xFFCDE8D6, 0xFFE2D4F5];

@@ -144,6 +144,14 @@ void main() {
       expect(decodeCard('${encodeCard(f)}x'), isNull);
       expect(decodeCard('hello'), isNull);
     });
+    test('barkada card carries avatar; old cards still decode', () {
+      final f = Friend(name: 'Bea', week: '2026-W41', xp: 410, steps: 1, streak: 9, level: 13, title: 'Street Smart', avatar: '🦊', color: 3);
+      final back = decodeCard(encodeCard(f))!;
+      expect(back.avatar, '🦊');
+      expect(back.color, 3);
+      final old = Friend(name: 'Old', week: 'w', xp: 1, steps: 1, streak: 1, level: 1, title: 't');
+      expect(decodeCard(encodeCard(old))!.avatar, '🙂');
+    });
   });
 
   group('seed sanity', () {

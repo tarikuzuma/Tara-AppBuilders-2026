@@ -12,7 +12,12 @@ class TaraDb {
 
   static Future<TaraDb> open({DateTime? now}) async {
     final path = p.join(await getDatabasesPath(), 'tara.db');
-    final db = await openDatabase(path, version: 1, onCreate: (db, _) async {
+    final db = await openDatabase(path, version: 2, onUpgrade: (db, oldV, newV) async {
+      if (oldV < 2) {
+        await db.execute('ALTER TABLE friends ADD COLUMN avatar TEXT');
+        await db.execute('ALTER TABLE friends ADD COLUMN color INTEGER');
+      }
+    }, onCreate: (db, _) async {
       await db.execute('CREATE TABLE places(id TEXT PRIMARY KEY, name TEXT, aliases TEXT, lat REAL, lng REAL)');
       await db.execute('CREATE TABLE trips(id TEXT PRIMARY KEY, origin_id TEXT, destination_id TEXT, mode TEXT, '
           'start_ms INTEGER, end_ms INTEGER, fare REAL, note TEXT, tags TEXT, source TEXT, km REAL)');
@@ -22,7 +27,7 @@ class TaraDb {
       await db.execute('CREATE TABLE owned_items(item_id TEXT, bought_ms INTEGER)');
       await db.execute('CREATE TABLE settings(key TEXT PRIMARY KEY, value TEXT)');
       await db.execute('CREATE TABLE friends(name TEXT PRIMARY KEY, week TEXT, xp INTEGER, steps INTEGER, '
-          'streak INTEGER, level INTEGER, title TEXT, scanned_ms INTEGER)');
+          'streak INTEGER, level INTEGER, title TEXT, scanned_ms INTEGER, avatar TEXT, color INTEGER)');
     });
     final store = TaraDb._(db);
     if ((await store.getSetting('seeded')) == null) await store.seed(now ?? DateTime.now());
