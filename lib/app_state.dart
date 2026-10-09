@@ -11,6 +11,7 @@ import 'package:record/record.dart';
 
 import 'ai/brain.dart';
 import 'ai/local_ai.dart';
+import 'config/ai_config.dart';
 import 'data/db.dart';
 import 'data/models.dart';
 import 'data/seed.dart';
@@ -86,7 +87,7 @@ class AppState extends ChangeNotifier {
     demoClock = (await db.getSetting('demo_clock')) != '0';
     speakReplies = (await db.getSetting('tts')) == '1';
     aiSkipped = (await db.getSetting('ai_skipped')) == '1';
-    if ((await db.getSetting('models_ready')) == '1') {
+    if ((await db.getSetting('models_ready')) == '1' || await _modelsOnDisk()) {
       final c = CactusAI()..markReady();
       ai = c;
       brain.ai = c;
@@ -110,6 +111,20 @@ class AppState extends ChangeNotifier {
     brain = TaraBrain(ai);
     aiSkipped = true;
     quests = pickQuests(QuestContext(trips, steps, now));
+  }
+
+  /// Models live in the app's documents folder; trust the files over the DB flag.
+  Future<bool> _modelsOnDisk() async {
+    try {
+      final docs = await getApplicationDocumentsDirectory();
+      for (final slug in [AiConfig.textModel, AiConfig.sttModel]) {
+        final d = Directory('${docs.path}/models/$slug');
+        if (!d.existsSync() || d.listSync().isEmpty) return false;
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> reload() async {
