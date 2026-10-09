@@ -67,6 +67,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/brand/
+
   # Bundled so the app looks right in airplane mode (google_fonts would fetch at runtime).
   fonts:
     - family: Manrope

@@ -1,3 +1,5 @@
+<p align="center"><img src="design/logo_clean_1024.png" width="160" alt="Tara.AI logo"></p>
+
 # Tara — your private, offline Taglish commute copilot
 
 **AppBuilders PH 2026 · on-device AI**
